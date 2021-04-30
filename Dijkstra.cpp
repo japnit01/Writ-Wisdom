@@ -11,7 +11,7 @@ class Graph
     Graph(int V);
     void addEdge(int u,int v,int w);
     void printGraph();
-    void printShortestPath(int source, int dest);
+    void printShortestPath(int source, int destination);
 };
 
 Graph::Graph(int V)
