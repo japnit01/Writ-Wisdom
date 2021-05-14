@@ -52,13 +52,28 @@ void codestable(minheapnode* root,string str)
     {
         cout<<root->l<<": "<<str<<"\n";
         codes[root->l] = str;
-        compressed+=(str+root->l);
     }
 
     codestable(root->left,str + "0");
     codestable(root->right,str + "1");
 }
 
+void preorder(minheapnode* root,string str,string a)
+{
+    if(!root)
+    {
+        return ;
+    }
+
+    compressed+=a;
+    if(root->l != '#')
+    {
+        compressed+=root->l;
+    }
+
+    preorder(root->left,str,"0");
+    preorder(root->right,str,"1");
+}
 
 
 void huffman(map<char,int> freq)
@@ -91,6 +106,8 @@ void huffman(map<char,int> freq)
     }
 
    codestable(q.top(),"");
+   string a;
+   preorder(q.top(),"",a);
 }
 
 void calcfreq(string text)
@@ -110,14 +127,49 @@ void calcfreq(string text)
     huffman(freq);
 }
 
-void decodehuffman(string text)
+int c = 0;
+void decodetree(string text,int n,minheapnode* reroot)
 {
-    stack<int> s;
+     if(reroot->l != '#' || c == n)
+     {
+        return;
+     }
+     
+     if(text[c] == '0')
+     {
+        if(text[c+1]==0 || text[c+1] == 1)
+        {
+            reroot->left = new minheapnode('#',-1);
+        }
+        else
+        {
+            reroot->left = new minheapnode(text[c+1],-1);
+        }
+        decodetree(text,n,reroot->left);
+     }
 
-    if(text == "1")
-    {
-        
-    }    
+     if(text[c] == '1')
+     {
+        if(text[c+1]==0 || text[c+1] == 1)
+        {
+            reroot->right = new minheapnode('#',-1);
+        }
+        else
+        {
+            reroot->right = new minheapnode(text[c+1],-1);
+        }
+        decodetree(text,n,reroot->right);
+    }
+}
+
+void decodehuffman(string text,int n)
+{   
+    minheapnode *reroot;
+    reroot = new minheapnode('#',-1);
+    int i = 0;
+    decodetree(text,n,reroot);
+    cout<<"\n";
+    codestable(reroot,"");
 }
 
 int main(){
@@ -146,11 +198,12 @@ int main(){
 
         calcfreq(s);
     }  
-    compressed+="0";
+    int n = compressed.size();
+    //compressed+="0";
     text_encode(s);
     cout<<compressed;
 
-    decodehuffman(compressed);
+    decodehuffman(compressed,n);
 
     return 0;
 }
