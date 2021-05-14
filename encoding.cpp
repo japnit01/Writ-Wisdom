@@ -129,44 +129,34 @@ void calcfreq(string text)
 
 int c = 0;
 void decodetree(string text,int n,minheapnode* reroot)
-{
-    
-     if(reroot->l != '#' || c == n)
-     {
-        cout<<c<<"\n";
-        return;
-     }
-     
-     if(text[c] == '0')
-     {
-        if(text[c+1]=='0' || text[c+1] == '1')
-        {
-            reroot->left = new minheapnode('#',-1);
-            c++;
-            decodetree(text,n,reroot->left);
-        }
-        else
-        {   
-            reroot->left = new minheapnode(text[c+1],-1);
-            c+=2;
-        }
-        
-        
-     }
-     else if(text[c] == '1')
-     {
-        if(text[c+1]=='0' || text[c+1] == '1')
-        {
-            reroot->right = new minheapnode('#',-1);
-            c++;
-            decodetree(text,n,reroot->right);
-        }
-        else
-        {
-            reroot->right = new minheapnode(text[c+1],-1);
-            c+=2;
-        }
+{   
+    if(reroot->l !='#')
+    {
+        return ;
+    } 
+
+    if(text[c]!='1' && text[c]!='0')
+    {
+        reroot->l = text[c];
+        c++;
+        return ;
     }
+
+    if(text[c] == '0')
+    {
+        reroot->left = new minheapnode('#',-1);
+        c++;
+        decodetree(text,n,reroot->left);
+    
+    }
+
+    if(text[c] == '1')
+    {
+       reroot->right = new minheapnode('#',-1);
+       c++;
+       decodetree(text,n,reroot->right); 
+    }    
+    return;
 }
 
 void decodehuffman(string text,int n)
@@ -175,8 +165,8 @@ void decodehuffman(string text,int n)
     reroot = new minheapnode('#',-1);
     int i = 0;
     cout<<"\n";
-    decodetree(text,n,reroot);
     cout<<n<<"\n";
+    decodetree(text,n,reroot);
     codestable(reroot,"");
 }
 
