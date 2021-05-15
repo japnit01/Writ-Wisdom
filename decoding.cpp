@@ -140,8 +140,11 @@ int main()
         cout<<dectext<<"\n";
 
         ofstream outpfile;
-
-        outputfile = inputfile.substr(0,inputfile.size()-15) + "_decompressed.txt";
+        
+        if(inputfile.substr(inputfile.size()-15,inputfile.size()) == "_compressed.txt")
+            outputfile = inputfile.substr(0,inputfile.size()-15) + "_decompressed.txt";
+        else
+            outputfile = inputfile + "_decompressed.txt";
         outpfile.open("decompressed_files/" + outputfile,ios::out);
         
         if(!outpfile)
