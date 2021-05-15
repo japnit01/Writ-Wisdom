@@ -1,6 +1,30 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+class book{
+    public:
+    string name;
+    string author;
+    string subject;
+    string tag;
+    int price;
+    int quantity;
+    string type;    
+
+    book(string n, string a, string s, string t, string tp, int p, int q)
+    {
+        name = n;
+        author = a;
+        subject = s;
+        tag = t;
+        type = tp;
+        price = p;
+        quantity = q;
+    }
+
+    void addFile();
+};
+
 map<char,string> codes;
 string compressed = "";
 
@@ -119,7 +143,7 @@ void downloadfile(){
     cout<<"\nDownload book\n";
 }
 
-void addfile(){
+void book::addfile(){
     cout<<"\nAdd Book\n";
     string name,author,subject,tag,file;
     cout<<"Name: \n";
