@@ -1,7 +1,7 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
-class book{
+class book {
     public:
     string name;
     string author;
@@ -140,7 +140,8 @@ void calcfreq(string text)
 }
 
 void downloadfile(){
-    cout<<"\nDownload book\n";
+    cout<<"\nEbooks\n";
+   
 }
 
 void book::addfile(){
@@ -211,6 +212,7 @@ void book::addfile(){
             //cout<<compressed.size()<<"\n";
             outpfile<<compressed<<endl;
         }
+        cout<<"File Uploaded";
         outpfile.close();
     }
 }
