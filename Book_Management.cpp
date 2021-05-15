@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
+#include <boost/filesystem.hpp>
 using namespace std;
+using boost::filesystem; 
 
 class book {
     public:
@@ -311,6 +313,11 @@ void initiate_code()
         new book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "", "Ebook", 0),
         new book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "", "Ebook", 0)
     };
+
+    for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
+    {
+        cout<<itr->leaf()<<"\n";
+    }
 }
 
 int main(){
