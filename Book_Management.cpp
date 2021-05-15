@@ -1,6 +1,18 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+class book{
+    public:
+    string name;
+    string author;
+    string subject;
+    string tag;
+    int price;
+    int quantity;
+    string type;    
+
+};
+
 map<char,string> codes;
 string compressed = "";
 
@@ -116,7 +128,8 @@ void calcfreq(string text)
 }
 
 void downloadfile(){
-    cout<<"\nDownload book\n";
+    cout<<"\nEbooks\n";
+   
 }
 
 void addfile(){
@@ -187,6 +200,7 @@ void addfile(){
             //cout<<compressed.size()<<"\n";
             outpfile<<compressed<<endl;
         }
+        cout<<"File Uploaded";
         outpfile.close();
     }
 }
