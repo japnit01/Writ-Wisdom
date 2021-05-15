@@ -38,7 +38,7 @@ void printq(priority_queue<minheapnode*,vector<minheapnode*>,cmp> q)
 {
     while(!q.empty())
     {   minheapnode* m = q.top();
-        cout<<(*m).l<<" "<<(*m).freq<<"\n";
+        //cout<<(*m).l<<" "<<(*m).freq<<"\n";
         q.pop();
     }
 }
@@ -50,7 +50,7 @@ void codestable(minheapnode* root,string str)
 
     if(root->l != '#')
     {
-        cout<<root->l<<": "<<str<<"\n";
+        //cout<<root->l<<": "<<str<<"\n";
         codes[root->l] = str;
     }
 
@@ -117,16 +117,16 @@ void calcfreq(string text)
     {
         freq[text[i]]++;
     }
-    
+    /*
     for(auto it = freq.begin();it!=freq.end();++it)
     {
         cout<<it->first<<" "<<it->second<<"\n";
     }
     
-    cout<<"\n";
+    cout<<"\n";*/
     huffman(freq);
 }
-
+/*
 int c = 0;
 void decodetree(string text,int n,minheapnode* reroot)
 {   
@@ -159,17 +159,19 @@ void decodetree(string text,int n,minheapnode* reroot)
     return;
 }
 
-void decodehuffman(string text,int n)
+void decodehuffman(string text)
 {   
     minheapnode *reroot;
     reroot = new minheapnode('#',-1);
-    int i = 0;
-    cout<<"\n";
-    cout<<n<<"\n";
+    
+    int n = stoi(text.substr(0,32),0,2);
+    //cout<<n<<""<<text.substr(0,32)<<"\n";
+
+    text = text.substr(32,text.size()-32);
     decodetree(text,n,reroot);
     codestable(reroot,"");
 }
-
+*/
 int main(){
     
     string inputfile,outputfile;
@@ -180,28 +182,57 @@ int main(){
     ifstream inpfile;
     string s="",temp;
 
-    inpfile.open(inputfile,ios::in);
+    inpfile.open("files/" + inputfile,ios::in);
     if(!inpfile)
     {
         cout<<"File not found\n";
     }
     else
     {
-        while(inpfile)
+        //inpfile>>s;
+        while(!inpfile.eof())
         {
-            getline(inpfile,temp,'\0');
+            getline(inpfile,temp);
+            //cout<<temp<<"\n";
             s+=temp;
         }
         inpfile.close();
-
         calcfreq(s);
-    }  
-    int n = compressed.size();
-    //compressed+="0";
-    text_encode(s);
-    cout<<compressed;
+      
+        int n = compressed.size();
+        //cout<<n<<"\n";
+        string tree_size="";
 
-    decodehuffman(compressed,n);
+        for (int i = 31; i >= 0; i--) {
+            int k = n >> i;
+            if (k & 1)
+            tree_size+="1";
+            else
+            tree_size+="0";
+        }
+        //cout<<tree_size.size()<<"\n";
+        compressed = tree_size + compressed;
+        //cout<<s<<"\n";
+        text_encode(s);
+        //cout<<compressed.size()<<"\n";
+    
+        ofstream outpfile;
+
+        outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        outpfile.open("compressed_files/" + outputfile,ios::out);
+        
+        if(!outpfile)
+        {
+            cout<<"File not created\n";
+        }
+        else
+        {
+            //cout<<compressed.size()<<"\n";
+            outpfile<<compressed<<endl;
+        }
+        outpfile.close();
+    }
+    //decodehuffman(compressed);
 
     return 0;
 }
