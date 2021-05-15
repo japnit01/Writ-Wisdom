@@ -10,8 +10,9 @@ class book {
     int price;
     int quantity;
     string type;    
-
-    book(string n, string a, string s, string t, string tp, int p, int q)
+    string filename;
+        
+    book(string n, string a, string s, string t, string tp, int p)
     {
         name = n;
         author = a;
@@ -19,9 +20,14 @@ class book {
         tag = t;
         type = tp;
         price = p;
-        quantity = q;
+        quantity = 0;
+        filename="";
     }
 };
+
+vector<book> Ebook;
+vector<book> Pbook;
+
 
 map<char,string> codes;
 string compressed = "";
@@ -198,7 +204,10 @@ void addfile(){
     
         ofstream outpfile;
 
-        outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        if(inputfile.substr(inputfile.size()-4,4) == ".txt")                                
+            outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        else
+            outputfile = inputfile + "_compressed.txt";
         outpfile.open("compressed_files/" + outputfile,ios::out);
         
         if(!outpfile)
@@ -209,8 +218,12 @@ void addfile(){
         {
             //cout<<compressed.size()<<"\n";
             outpfile<<compressed<<endl;
+            cout<<"File Uploaded";
+            book b(name,author,subject,tag,"Ebook",0);
+            b.filename = outputfile;
+            Ebook.push_back(b);
         }
-        cout<<"File Uploaded";
+        
         outpfile.close();
     }
 }
@@ -289,9 +302,19 @@ void employee()
     cout<<"Employee\n";
 }
 
-int main(){
-    
+void initiate_code()
+{
+    Ebook = {
+        new book("Machine Learning", "Tom Mitchell", "Machine Learning", "", "Ebook", 0),
+        new book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "", "Ebook", 0),
+        new book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "", "Ebook", 0),
+        new book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "", "Ebook", 0),
+        new book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "", "Ebook", 0)
+    };
+}
 
+int main(){
+    void initiate_code();
     cout<<"\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
     cout<<"Log in \n";
     cout<<"User --> 1    Employee --> 2    Exit --> 3\n";
