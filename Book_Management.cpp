@@ -21,8 +21,6 @@ class book {
         price = p;
         quantity = q;
     }
-
-    void addFile();
 };
 
 map<char,string> codes;
@@ -144,7 +142,7 @@ void downloadfile(){
    
 }
 
-void book::addfile(){
+void addfile(){
     cout<<"\nAdd Book\n";
     string name,author,subject,tag,file;
     cout<<"Name: \n";
