@@ -10,18 +10,24 @@ class book {
     int price;
     int quantity;
     string type;    
-
-    book(string n, string a, string s, string t, string tp, int p, int q)
+    string filename;
+        
+    book(string n, string a, string s, string t, string tp, int p)
     {
+        quantity = 0;
         name = n;
         author = a;
         subject = s;
         tag = t;
         type = tp;
         price = p;
-        quantity = q;
+        filename="";
     }
 };
+
+vector<book> Ebook;
+vector<book> Pbook;
+
 
 map<char,string> codes;
 string compressed = "";
@@ -198,7 +204,10 @@ void addfile(){
     
         ofstream outpfile;
 
-        outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        if(inputfile.substr(inputfile.size()-4,4) == ".txt")                                
+            outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        else
+            outputfile = inputfile + "_compressed.txt";
         outpfile.open("compressed_files/" + outputfile,ios::out);
         
         if(!outpfile)
@@ -209,8 +218,12 @@ void addfile(){
         {
             //cout<<compressed.size()<<"\n";
             outpfile<<compressed<<endl;
+            cout<<"File Uploaded";
+            book b(name,author,subject,tag,"Ebook",0);
+            b.filename = outputfile;
+            Ebook.push_back(b);
         }
-        cout<<"File Uploaded";
+        
         outpfile.close();
     }
 }
@@ -289,9 +302,13 @@ void employee()
     cout<<"Employee\n";
 }
 
-int main(){
-    
+void initiate_code()
+{
 
+}
+
+int main(){
+    void initiate_code();
     cout<<"\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
     cout<<"Log in \n";
     cout<<"User --> 1    Employee --> 2    Exit --> 3\n";
