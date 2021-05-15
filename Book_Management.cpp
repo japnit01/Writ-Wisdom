@@ -143,23 +143,8 @@ void calcfreq(string text)
     huffman(freq);
 }
 
-void downloadfile(){
-    cout<<"\nEbooks\n";
-   
-}
-
-void addfile(){
-    cout<<"\nAdd Book\n";
-    string name,author,subject,tag,file;
-    cout<<"Name: \n";
-    cin>>name;
-    cout<<"Author: \n";
-    cin>>author;
-    cout<<"Subject: \n";
-    cin>>subject;
-    cout<<"Tag (Class/Engineering/Medical): \n";
-    cin>>tag;
-
+void info(string name,string author,string subject,string tag,string path)
+{
     string inputfile,outputfile;
 
     cout<<"Enter the name of file: \n";
@@ -168,7 +153,7 @@ void addfile(){
     ifstream inpfile;
     string s="",temp;
 
-    inpfile.open("files/" + inputfile,ios::in);
+    inpfile.open(path + inputfile,ios::in);
     if(!inpfile)
     {
         cout<<"File not found\n";
@@ -228,6 +213,26 @@ void addfile(){
     }
 }
 
+void downloadfile(string path){
+    cout<<"\nEbooks\n";
+   
+}
+
+void addfile(string path){
+    cout<<"\nAdd Book\n";
+    string name,author,subject,tag;
+    cout<<"Name: \n";
+    cin>>name;
+    cout<<"Author: \n";
+    cin>>author;
+    cout<<"Subject: \n";
+    cin>>subject;
+    cout<<"Tag (Class/Engineering/Medical): \n";
+    cin>>tag;
+
+    info(name,author,subject,tag,path);
+}
+
 void cart()
 {
     cout<<"\nCart\n";
@@ -238,17 +243,17 @@ void bookbank()
     cout<<"\n\nBook Bank\n";
     cout<<"1. Upload Books\n";
     cout<<"2. Download Books\n";
-
+    string path = "user_files/";
     int choice1;
     cout<<"Enter Choice: ";
     cin>>choice1;
     if(choice1 == 1)
     {
-        addfile();
+        addfile(path);
     }
     else if(choice1 == 2)
     {
-        downloadfile();
+        downloadfile(path);
     }
 }
 
@@ -305,12 +310,20 @@ void employee()
 void initiate_code()
 {
     Ebook = {
-        new book("Machine Learning", "Tom Mitchell", "Machine Learning", "", "Ebook", 0),
-        new book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "", "Ebook", 0),
-        new book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "", "Ebook", 0),
-        new book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "", "Ebook", 0),
-        new book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "", "Ebook", 0)
+         book("Machine Learning", "Tom Mitchell", "Machine Learning", "", "Ebook", 0),
+         book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "", "Ebook", 0),
+         book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "", "Ebook", 0),
+         book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "", "Ebook", 0),
+         book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "", "Ebook", 0)
     };
+    
+    Ebook[0].filename = "Machine Learning";
+    Ebook[1].filename = "Computer Graphics";
+    Ebook[2].filename = "Theory of Computation";
+    Ebook[3].filename = "Discrete Mathematics";
+    Ebook[4].filename = "EVS";
+
+    
 }
 
 int main(){
