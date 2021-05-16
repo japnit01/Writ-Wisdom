@@ -1,7 +1,5 @@
 #include <bits/stdc++.h>
-#include <boost/filesystem.hpp>
 using namespace std;
-using boost::filesystem; 
 
 class book {
     public:
@@ -26,6 +24,8 @@ class book {
         filename="";
     }
 };
+//#include <boost/filesystem.hpp>
+//using boost::filesystem; 
 
 vector<book> Ebook;
 vector<book> Pbook;
@@ -217,7 +217,24 @@ void info(string name,string author,string subject,string tag,string path)
 
 void downloadfile(string path){
     cout<<"\nEbooks\n";
-   
+    int count = 1;
+    for(int i=0;i<Ebook.size();i++)
+    {   cout<<"i";
+        if(Ebook[i].price == 0)
+        {   
+            cout<<"\n"<<Ebook[i].subject<<"\n";
+            cout<<"Name: "<<Ebook[i].name<<"\n";
+            cout<<Ebook[i].tag<<"\nAuthor: "<<Ebook[i].author<<"\n";
+            cout<<"Price: "<<Ebook[i].price<<"\n";
+            cout<<"\n Add to Cart --> "<<count<<"\n";
+            cout<<"-----------------------------";
+            count++;
+        }
+    }
+    // vector<int> addtocart;
+    // do{
+    //     cout<<"Enter Choice"
+    // }
 }
 
 void addfile(string path){
@@ -312,18 +329,19 @@ void employee()
 void initiate_code()
 {
     Ebook = {
-         book("Machine Learning", "Tom Mitchell", "Machine Learning", "", "Ebook", 0),
-         book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "", "Ebook", 0),
-         book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "", "Ebook", 0),
-         book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "", "Ebook", 0),
-         book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "", "Ebook", 0)
+         book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "Ebook", 0),
+         book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "Ebook", 0),
+         book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "Ebook", 0),
+         book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "Ebook", 0),
+         book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "Ebook", 0)
     };
 
-    for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
-    {
-        cout<<itr->leaf()<<"\n";
-    }
+    // for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
+    // {
+    //     cout<<itr->leaf()<<"\n";
+    // }
 
+        cout<<Ebook.size()<<" ";
     
     Ebook[0].filename = "Machine Learning";
     Ebook[1].filename = "Computer Graphics";
@@ -331,10 +349,18 @@ void initiate_code()
     Ebook[3].filename = "Discrete Mathematics";
     Ebook[4].filename = "EVS";
 
-    
+    Pbook = {
+        book("Elementary Problems in Organic Chemistry","M.S. Chouhan","Chemistry","Engineering","pbook",500),
+        book("Understanding Physics","D.C. Pandey","Physics","Engineering","pbook",432),
+        book("New Simplified Physics 11th","SL Arora","Physics","11","pbook",1049),
+        book("New Simplified Physics 12th","SL Arora","Physics","12","pbook",1049),
+        book("Introduction to Algorithms","T.H.Cormen, C.E.Leiserson, R.L Rivest","Algorithm Design and Analysis","Engineering","pbook",830),
+        book("Methods of Real Analysis","Richard R. Goldberg","Real Analysis","Engineering","pbook",945)
+    };
 }
 
 int main(){
+
     void initiate_code();
     cout<<"\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
     cout<<"Log in \n";
