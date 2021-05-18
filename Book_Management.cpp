@@ -1,19 +1,27 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <iterator>
+#include <map>
+#include <queue>
+#include <boost/filesystem.hpp>
+#include <fstream>
 using namespace std;
 
-class book {
+class book{
     public:
+    string id;
     string name;
     string author;
     string subject;
     string tag;
     int price;
     int quantity;
-    string type;    
+    string type;
     string filename;
-        
-    book(string n, string a, string s, string t, string tp, int p)
+
+    book(string id,string n, string a, string s, string t, string tp, int p)
     {
+        id = id;
         name = n;
         author = a;
         subject = s;
@@ -21,25 +29,27 @@ class book {
         type = tp;
         price = p;
         quantity = 0;
-        filename="";
+        filename = "";
     }
-};
-//#include <boost/filesystem.hpp>
-//using boost::filesystem; 
 
+    
+};
+
+map<string,book> library;
+vector<int> Cart;
 vector<book> Ebook;
 vector<book> Pbook;
 
-
-map<char,string> codes;
+map<char, string> codes;
 string compressed = "";
 
-struct minheapnode{
+struct minheapnode
+{
     char l;
     int freq;
-    minheapnode *left,*right;
+    minheapnode *left, *right;
 
-    minheapnode(char l,int freq)
+    minheapnode(char l, int freq)
     {
         left = right = NULL;
         this->l = l;
@@ -47,230 +57,266 @@ struct minheapnode{
     }
 };
 
-struct cmp{
-    bool operator()(minheapnode* a,minheapnode* b)
+struct cmp
+{
+    bool operator()(minheapnode *a, minheapnode *b)
     {
-        return a->freq>b->freq;
+        return a->freq > b->freq;
     }
 };
 
 void text_encode(string text)
 {
-    for(int i=0;i<text.size();i++)
+    for (int i = 0; i < text.size(); i++)
     {
-        compressed+=codes[text[i]];
+        compressed += codes[text[i]];
     }
 }
 
-void codestable(minheapnode* root,string str)
+void codestable(minheapnode *root, string str)
 {
-    if(!root)
-        return ;
+    if (!root)
+        return;
 
-    if(root->l != '#')
+    if (root->l != '#')
     {
         //cout<<root->l<<": "<<str<<"\n";
         codes[root->l] = str;
     }
 
-    codestable(root->left,str + "0");
-    codestable(root->right,str + "1");
+    codestable(root->left, str + "0");
+    codestable(root->right, str + "1");
 }
 
-void preorder(minheapnode* root,string str,string a)
+void preorder(minheapnode *root, string str, string a)
 {
-    if(!root)
+    if (!root)
     {
-        return ;
+        return;
     }
 
-    compressed+=a;
-    if(root->l != '#')
+    compressed += a;
+    if (root->l != '#')
     {
-        compressed+=root->l;
+        compressed += root->l;
     }
 
-    preorder(root->left,str,"0");
-    preorder(root->right,str,"1");
+    preorder(root->left, str, "0");
+    preorder(root->right, str, "1");
 }
 
-void huffman(map<char,int> freq)
+void huffman(map<char, int> freq)
 {
-     
-    priority_queue<minheapnode*,vector<minheapnode*>,cmp> q;
 
-    for(auto it = freq.begin();it!=freq.end();it++)
+    priority_queue<minheapnode *, vector<minheapnode *>, cmp> q;
+
+    for (auto it = freq.begin(); it != freq.end(); it++)
     {
-        q.push(new minheapnode(it->first,it->second));
+        q.push(new minheapnode(it->first, it->second));
     }
 
     //printq(q);
-    minheapnode *top,*right,*left;
+    minheapnode *top, *right, *left;
 
-    while(q.size()!=1)
+    while (q.size() != 1)
     {
-        left  = q.top();
+        left = q.top();
         q.pop();
 
         right = q.top();
         q.pop();
 
-        top = new minheapnode('#',left->freq + right->freq);
+        top = new minheapnode('#', left->freq + right->freq);
 
         top->left = left;
         top->right = right;
-        
+
         q.push(top);
     }
 
-   codestable(q.top(),"");
-   string a;
-   preorder(q.top(),"",a);
+    codestable(q.top(), "");
+    string a;
+    preorder(q.top(), "", a);
 }
 
 void calcfreq(string text)
 {
-    map<char,int> freq;
-    for(int i=0;i<text.size();i++)
+    map<char, int> freq;
+    for (int i = 0; i < text.size(); i++)
     {
         freq[text[i]]++;
     }
-    /*
-    for(auto it = freq.begin();it!=freq.end();++it)
-    {
-        cout<<it->first<<" "<<it->second<<"\n";
-    }
     
-    cout<<"\n";*/
+    cout<<"\n";
     huffman(freq);
 }
 
-void info(string name,string author,string subject,string tag,string path)
+void info(string name, string author, string subject, string tag, string path)
 {
-    string inputfile,outputfile;
+    string inputfile, outputfile;
 
-    cout<<"Enter the name of file: \n";
-    cin>>inputfile;
+    cout << "Enter the name of file: \n";
+    cin >> inputfile;
 
     ifstream inpfile;
-    string s="",temp;
+    string s = "", temp;
 
-    inpfile.open(path + inputfile,ios::in);
-    if(!inpfile)
+    inpfile.open(path + inputfile, ios::in);
+    if (!inpfile)
     {
-        cout<<"File not found\n";
+        cout << "File not found\n";
     }
     else
     {
         //inpfile>>s;
-        while(!inpfile.eof())
+        while (!inpfile.eof())
         {
-            getline(inpfile,temp);
+            getline(inpfile, temp);
             //cout<<temp<<"\n";
-            s+=temp;
+            s += temp;
         }
         inpfile.close();
         calcfreq(s);
-      
+
         int n = compressed.size();
         //cout<<n<<"\n";
-        string tree_size="";
+        string tree_size = "";
 
-        for (int i = 31; i >= 0; i--) {
+        for (int i = 31; i >= 0; i--)
+        {
             int k = n >> i;
             if (k & 1)
-            tree_size+="1";
+                tree_size += "1";
             else
-            tree_size+="0";
+                tree_size += "0";
         }
         //cout<<tree_size.size()<<"\n";
         compressed = tree_size + compressed;
         //cout<<s<<"\n";
         text_encode(s);
         //cout<<compressed.size()<<"\n";
-    
+
         ofstream outpfile;
 
-        if(inputfile.substr(inputfile.size()-4,4) == ".txt")                                
-            outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        if (inputfile.substr(inputfile.size() - 4, 4) == ".txt")
+            outputfile = inputfile.substr(0, inputfile.size() - 4) + "_compressed.txt";
         else
             outputfile = inputfile + "_compressed.txt";
-        outpfile.open("compressed_files/" + outputfile,ios::out);
-        
-        if(!outpfile)
+        outpfile.open("compressed_files/" + outputfile, ios::out);
+
+        if (!outpfile)
         {
-            cout<<"File not created\n";
+            cout << "File not created\n";
         }
         else
         {
             //cout<<compressed.size()<<"\n";
-            outpfile<<compressed<<endl;
-            cout<<"File Uploaded";
-            book b(name,author,subject,tag,"Ebook",0);
+            outpfile << compressed << endl;
+            cout << "File Uploaded"; 
+            book b("EB" + to_string(Ebook.size()+1),name, author, subject, tag, "Ebook", 0);
             b.filename = outputfile;
             Ebook.push_back(b);
         }
-        
+
         outpfile.close();
     }
 }
 
-void downloadfile(string path){
-    cout<<"\nEbooks\n";
+void downloadfile(string path)
+{
+    cout << "\nEbooks\n";
     int count = 1;
-    for(int i=0;i<Ebook.size();i++)
-    {   cout<<"i";
-        if(Ebook[i].price == 0)
-        {   
-            cout<<"\n"<<Ebook[i].subject<<"\n";
-            cout<<"Name: "<<Ebook[i].name<<"\n";
-            cout<<Ebook[i].tag<<"\nAuthor: "<<Ebook[i].author<<"\n";
-            cout<<"Price: "<<Ebook[i].price<<"\n";
-            cout<<"\n Add to Cart --> "<<count<<"\n";
-            cout<<"-----------------------------";
+    for (int i = 0; i < Ebook.size(); i++)
+    {
+        if (Ebook[i].price == 0)
+        {
+            cout << "\n"
+                 << Ebook[i].subject << "\n";
+            cout << "Name: " << Ebook[i].name << "\n";
+            cout << Ebook[i].tag << "\nAuthor: " << Ebook[i].author << "\n";
+            cout << "Price: " << Ebook[i].price << "\n";
+            cout << "\nAdd to Cart --> " << count << "\n";
+            cout << "-----------------------------";
             count++;
         }
     }
-    // vector<int> addtocart;
-    // do{
-    //     cout<<"Enter Choice"
-    // }
+
+    int c;
+    cout << "\n Exit --> " << count;
+    int exit = count;
+    char ch = 'y';
+    
+    do
+    {
+        cout << "Enter Choice";
+        cin >> c;
+        if (c <= exit)
+        {
+            if (c == exit)
+            {
+                return ;
+            }
+            if( Cart[c] == 0)
+            {
+                Cart[c]++;
+            }
+            else
+            {
+                cout<<"Only one can be added";
+            }
+        }
+        else
+        {
+            cout << "Please input correct choice";
+        }
+
+    } while (ch == 'y');
 }
 
-void addfile(string path){
-    cout<<"\nAdd Book\n";
-    string name,author,subject,tag;
-    cout<<"Name: \n";
-    cin>>name;
-    cout<<"Author: \n";
-    cin>>author;
-    cout<<"Subject: \n";
-    cin>>subject;
-    cout<<"Tag (Class/Engineering/Medical): \n";
-    cin>>tag;
+void addfile(string path)
+{
+    cout << "\nAdd Book\n";
+    string name, author, subject, tag;
+    cout << "Name: \n";
+    cin >> name;
+    cout << "Author: \n";
+    cin >> author;
+    cout << "Subject: \n";
+    cin >> subject;
+    cout << "Tag (Class/Engineering/Medical): \n";
+    cin >> tag;
 
-    info(name,author,subject,tag,path);
+    info(name, author, subject, tag, path);
 }
 
 void cart()
 {
-    cout<<"\nCart\n";
+    cout << "\nCart\n";
+    // for(auto it = Cart.begin();it != Cart.end();it++)
+    // {   
+    //         cout<<"\n";
+    //         cout<< "Name: " <<  it->first.name << "\n";
+    //         cout<< it->first.tag << "\nAuthor: " << it->first.author << "\n";
+    //         cout<< "Price: " << it->first.price << "\n";
+    //         cout<< "\nItem count"<<it->second<< "\n";
+    //         cout<< "-----------------------------";
+    // }
 }
 
 void bookbank()
 {
-    cout<<"\n\nBook Bank\n";
-    cout<<"1. Upload Books\n";
-    cout<<"2. Download Books\n";
+    cout << "\n\nBook Bank\n";
+    cout << "1. Upload Books\n";
+    cout << "2. Download Books\n";
     string path = "user_files/";
     int choice1;
-    cout<<"Enter Choice: ";
-    cin>>choice1;
-    if(choice1 == 1)
+    cout << "Enter Choice: ";
+    cin >> choice1;
+    if (choice1 == 1)
     {
         addfile(path);
     }
-    else if(choice1 == 2)
+    else if (choice1 == 2)
     {
         downloadfile(path);
     }
@@ -278,71 +324,77 @@ void bookbank()
 
 void orderstatus()
 {
-    cout<<"\nOrder Status\n";
+    cout << "\nOrder Status\n";
 }
 
 void orderbook()
 {
-    cout<<"Order Book\n";
+    cout << "Order Book\n";
 }
 
 void customer()
 {
-    cout<<"\n\n\nCustomer\n";
-    cout<<"1. Book bank\n";
-    cout<<"2. Order Books\n";
-    cout<<"3. Check Order Status\n";
-    cout<<"4. Cart\n";
-    cout<<"5. Exit\n";
+    cout << "\n\n\nCustomer\n";
+    cout << "1. Book bank\n";
+    cout << "2. Order Books\n";
+    cout << "3. Check Order Status\n";
+    cout << "4. Cart\n";
+    cout << "5. Exit\n";
 
     char ch = 'y';
 
-    do{
-        cout<<"Enter Choice: ";
+    do
+    {
+        cout << "Enter Choice: ";
         int choice1;
-        cin>>choice1;
-        switch(choice1)
+        cin >> choice1;
+        switch (choice1)
         {
-            case 1: bookbank();
-                    break;
-            case 2: orderbook();        
-                    break;
-            case 3: orderstatus();
-                break;
-            case 4: cart();
-                    break;
-            case 5: cout<<"\nExiting....\n";
-                    _Exit(10);
-                    break;
-            default: "\nWrong Choice\n";
+        case 1:
+            bookbank();
+            break;
+        case 2:
+            //orderbook();
+            break;
+        case 3:
+            //orderstatus();
+            break;
+        case 4:
+            //cart();
+            break;
+        case 5:
+            cout << "\nExiting....\n";
+            _Exit(10);
+            break;
+        default:
+            "\nWrong Choice\n";
         }
-        cout<<"\nWant to retry(Y/y): "; 
-        cin>>ch;
-    }while(ch == 'y' || ch =='Y');
+        cout << "\nWant to retry(Y/y): ";
+        cin >> ch;
+    } while (ch == 'y' || ch == 'Y');
 }
 
 void employee()
 {
-    cout<<"Employee\n";
+    cout << "Employee\n";
 }
 
 void initiate_code()
 {
     Ebook = {
-         book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "Ebook", 0),
-         book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "Ebook", 0),
-         book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "Ebook", 0),
-         book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "Ebook", 0),
-         book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "Ebook", 0)
-    };
+        book("EB1","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "Ebook", 0),
+        book("EB2","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "Ebook", 0),
+        book("EB3","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "Ebook", 0),
+        book("EB4","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "Ebook", 0),
+        book("EB5","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "Ebook", 0)};
 
-    // for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
-    // {
-    //     cout<<itr->leaf()<<"\n";
-    // }
+    /*for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
+    {
+        cout<<itr->leaf()<<"\n";
+    }*/
 
-        cout<<Ebook.size()<<" ";
-    
+    //cout << Ebook.size() << " ";
+
     Ebook[0].filename = "Machine Learning";
     Ebook[1].filename = "Computer Graphics";
     Ebook[2].filename = "Theory of Computation";
@@ -350,45 +402,60 @@ void initiate_code()
     Ebook[4].filename = "EVS";
 
     Pbook = {
-        book("Elementary Problems in Organic Chemistry","M.S. Chouhan","Chemistry","Engineering","pbook",500),
-        book("Understanding Physics","D.C. Pandey","Physics","Engineering","pbook",432),
-        book("New Simplified Physics 11th","SL Arora","Physics","11","pbook",1049),
-        book("New Simplified Physics 12th","SL Arora","Physics","12","pbook",1049),
-        book("Introduction to Algorithms","T.H.Cormen, C.E.Leiserson, R.L Rivest","Algorithm Design and Analysis","Engineering","pbook",830),
-        book("Methods of Real Analysis","Richard R. Goldberg","Real Analysis","Engineering","pbook",945)
-    };
+        book("PB1","Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
+        book("PB2","Understanding Physics", "D.C. Pandey", "Physics", "Engineering", "pbook", 432),
+        book("PB3","New Simplified Physics 11th", "SL Arora", "Physics", "11", "pbook", 1049),
+        book("PB4","New Simplified Physics 12th", "SL Arora", "Physics", "12", "pbook", 1049),
+        book("PB5","Introduction to Algorithms", "T.H.Cormen, C.E.Leiserson, R.L Rivest", "Algorithm Design and Analysis", "Engineering", "pbook", 830),
+        book("PB6","Methods of Real Analysis", "Richard R. Goldberg", "Real Analysis", "Engineering", "pbook", 945)};
+
+    for(int i = 0;i<Ebook.size();i++)
+    {
+        library[Ebook[i].id] = Ebook[i];
+    }
+
+    for(int i = 0;i<Pbook.size();i++)
+    {
+        library[Pbook[i].id] = Pbook[i];
+    }
 }
 
-int main(){
-
-    void initiate_code();
-    cout<<"\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
-    cout<<"Log in \n";
-    cout<<"User --> 1    Employee --> 2    Exit --> 3\n";
+int main()
+{
+    initiate_code();
+    //cout << Ebook.size();
+    cout << "\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
+    cout << "Log in \n";
+    cout << "User --> 1    Employee --> 2    Exit --> 3\n";
     char ch = 'y';
 
-    do{
-        cout<<"Enter Choice: ";
+    do
+    {
+        cout << "Enter Choice: ";
         int choice1;
-        cin>>choice1;
-        switch(choice1)
+        cin >> choice1;
+        switch (choice1)
         {
-            case 1: customer();
-                    break;
+        case 1:
+            customer();
+            break;
 
-            case 2: employee();        
-                    break;
+        case 2:
+            employee();
+            break;
 
-            case 3: cout<<"\nExiting....\n";
-                    _Exit(10);
-                    break;
+        case 3:
+            cout << "\nExiting....\n";
+            _Exit(10);
+            break;
 
-            default: "\nWrong Choice\n";
+        default:
+            "\nWrong Choice\n";
         }
 
-        cout<<"\nWant to Login Again(Y/y): "; 
-        cin>>ch;
-    }while(ch == 'y' || ch =='Y');
-    cout<<"\nExiting.....\n";
+        cout << "\nWant to Login Again(Y/y): ";
+        cin >> ch;
+    } while (ch == 'y' || ch == 'Y');
+    cout << "\nExiting.....\n";
     return 0;
 }
