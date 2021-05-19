@@ -2,8 +2,10 @@
 #include <vector>
 #include <iterator>
 #include <map>
+#include <list>
+#include <stack>
 #include <queue>
-#include <boost/filesystem.hpp>
+// #include <boost/filesystem.hpp>
 #include <fstream>
 #include <iomanip>
 using namespace std;
@@ -49,7 +51,48 @@ class book{
     }
 };
 
-map<string,int> places ;
+class Graph 
+{
+    public:
+
+    int V;
+    vector<list<pair<int,int>>> adj;
+
+    Graph(int V);
+    void addEdge(int u,int v,int w);
+    void printGraph();
+    // void printShortestPath(int source, int destination);s
+};
+
+Graph::Graph(int V)
+{
+    this->V = V;
+    adj = vector<list<pair<int,int>>> (V, list<pair<int,int>>());
+}
+
+void Graph::addEdge(int u, int v,int w)
+{
+    adj[u].push_back(make_pair(v,w));
+    adj[v].push_back(make_pair(u,w));
+}
+
+void Graph::printGraph()
+{
+    for(int i=0;i<V;i++)
+    {
+        cout<<i<<" ";
+
+        for(auto ptr : adj[i])
+        {
+            cout<<ptr.first<<" ";
+        }
+        cout<<"\n";
+    }
+}
+
+Graph g(10);
+map<string,int> placesTonodes;
+map<int,string> nodesToplaces;
 map<string,book> library;
 map<string,int> Cart;
 vector<book> Ebook;
@@ -177,8 +220,62 @@ void download()
 
 }
 
-void deliver()
+// Using Dijkstra's Algorithm
+void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 {
+    int source = placesTonodes[src];
+    int destination = placesTonodes[dest];
+    vector<int> connected(V);
+    stack<int> s;
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; // min heap
+    vector<int> distance(V,INT_MAX);
+
+    pq.push(make_pair(0,source));
+    distance[source] = 0;
+
+    while(!pq.empty())
+    {
+        int node = pq.top().second, u, wt;
+        pq.pop();
+
+        for(auto ptr : adj[node])
+        {
+            u = ptr.first;
+            wt = ptr.second;
+
+            if(distance[node] + wt < distance[u])
+            {
+                distance[u] = distance[node] + wt;
+                pq.push(make_pair(distance[u],u));
+                connected[u] = node;
+            }
+        }
+    }
+
+    int i = destination;
+    s.push(i);
+
+    while(i != source)
+    {
+        i = connected[i];
+        s.push(i);
+    }
+
+    cout<<"\nDelivery man will travel from "<<source<<" to "<<destination<<" via the following route :- \n\n\t";
+
+    while(!s.empty())
+    {
+        cout<<nodesToplaces[s.top()];
+            
+        if(s.size() > 1)
+        {
+            cout<<" -> ";
+        }
+
+        s.pop();
+    }
+
+    cout<<"\n\nTotal distance : "<<distance[destination]<<"\n\n";
 
 }
 
@@ -198,8 +295,13 @@ bool billing(int p,int e,int sum){
     cout<<"3. Debit Card";
     
     cout<<"Payment Succesfull!!!\n";
+
+    string source = "Keshav Puram";
+    string destination;
+    cout<<"\n\nEnter the place for collecting the order : ";
+    cin>>destination;
     
-    deliver();
+    deliver(g.adj,g.V,source,destination);
     download();
 
     return false;
@@ -580,12 +682,36 @@ void employee()
     cout << "Employee\n";
 }
 
+void DelhiMap()
+{
+    g.addEdge(0,3,4);
+    g.addEdge(1,2,2);
+    g.addEdge(2,3,7);
+    g.addEdge(3,4,3);
+    g.addEdge(4,1,5);
+    g.addEdge(1,0,1);
+    g.addEdge(3,5,9);
+    g.addEdge(1,5,6);
+    g.addEdge(6,5,3);
+    g.addEdge(1,9,12);
+    g.addEdge(6,9,6);
+    g.addEdge(0,7,8);
+    g.addEdge(7,9,20);
+    g.addEdge(2,8,8);
+    g.addEdge(8,7,2);
+}
+
 void initiate_code()
 {
+    DelhiMap();
 
-    places
+    placesTonodes = {
+        {"a",1},{"b",2},{"c",3},{"d",4},{"e",5},{"f",6},{"g",7},{"h",8},{"i",9},{"j",10}
+    };
 
-
+    nodesToplaces = {
+        {1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"},{10,"j"}
+    };
 
     Ebook = {
         book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 765),
@@ -598,7 +724,9 @@ void initiate_code()
         book ("NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0),
         book ("NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0),
         book (" NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0),
-        book ("NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0)};
+        book ("NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0)
+        
+    };
 
 
 
@@ -631,7 +759,9 @@ void initiate_code()
         book ("Cengage Calculus for JEE Advanced", "G. Tewani", "mathematics", "engineering", "pbook",899),
         book ("Cengage Coordinate geometry for JEE Advanced", "G. Tewani", "mathematics", "engineering", "pbook",739),
         book ("Cengage Mechanics-1 for JEE Advanced", "B.M. Sharma", "physics", "engineering", "pbook",849),
-        book ("Elementary Problems in Organic Chemistry", "MS Chouhan", "chemistry", "engineering", "pbook",499)};
+        book ("Elementary Problems in Organic Chemistry", "MS Chouhan", "chemistry", "engineering", "pbook",499)
+    
+    };
 
     Pbook[0].quantity = 3;
     Pbook[1].quantity = 1;
