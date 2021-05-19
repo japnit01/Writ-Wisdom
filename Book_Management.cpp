@@ -10,7 +10,7 @@ using namespace std;
 
 int E_count = 0,P_count = 0;
 string user_path = "user_files/",decompress_path = "decompressed_files/";
-
+string location;
 class book{
     public:
     string id;
@@ -49,6 +49,7 @@ class book{
     }
 };
 
+map<string,int> places ;
 map<string,book> library;
 map<string,int> Cart;
 vector<book> Ebook;
@@ -78,6 +79,12 @@ struct cmp
         return a->freq > b->freq;
     }
 };
+
+void address()
+{
+    cout<<"Enter Address: ";
+    cin>>location;
+}
 
 void text_encode(string text)
 {
@@ -165,18 +172,35 @@ void calcfreq(string text)
     huffman(freq);
 }
 
-bool billing(){
-    cout<<"Order Details\n";
-    int sum = 0;
+void download()
+{
+
+}
+
+void deliver()
+{
+
+}
+
+bool billing(int p,int e,int sum){
+    cout<<"Order Summary\n";
+    cout<<"Item Ordered: "<<Cart.size()<<"\n";
+    cout<<"Ebook: "<<e<<"\n";
+    cout<<"Printed Book: "<<p<<"\n";
+    cout<<"Total: "<<sum<<"\n";
+
+    cout<<"Avail Discount Coupons: ";
+    string coupon;
+    cin>>coupon;
+
+    cout<<"1. UPI(Patym/Phonepe/Gpay)";
+    cout<<"2. Credit Card";
+    cout<<"3. Debit Card";
     
-    for(auto it = Cart.begin();it!=Cart.end();++it)
-    {
-        string id = it->first;
-        cout<<"Name: "<<library[id].name<<"\n";
-        cout<<setw(6)<<"Price: "<<library[id].price<<setw(15)<<"Item Count: "<<it->second<<"\n";
-        cout<<"-------------------------------------------\n";
-        sum+=((library[id].price)*it->second);
-    }
+    cout<<"Payment Succesfull!!!\n";
+    
+    deliver();
+    download();
 
     return false;
 }
@@ -331,17 +355,25 @@ void addfile()
 void cart()
 {
     cout << "\nCart\n";
+    int sum = 0,p = 0,e = 0;
     for(auto it = Cart.begin();it != Cart.end();it++)
     {       string id = it->first;
-            cout<<"\n";
             cout<<"ID: "<<id<<"\n";
             cout<< "Name: " <<library[id].name<<"\n";
-            cout<< library[id].tag << "\nAuthor: "<< library[id].author<<"\n";
             cout<< "Price: "<<library[id].price<<"\n";
             cout<< "\nItem count "<<it->second<< "\n";
-            cout<< "-----------------------------";
+            cout<< "-----------------------------\n";
+            sum+=((library[id].price)*it->second);
+            if(library[id].type == "ebook")
+            {
+                e++;
+            }
+            else
+            {
+                p++;
+            }
     }
-    cout<<"\n";
+    cout<<"Total: "<<sum<<"\n";
     char ch = 'y';
     do
     {
@@ -354,8 +386,11 @@ void cart()
         cin>>choice;
 
         if(choice == 1)
-        {
-            if(billing())
+        {   if(p!=0)
+            {
+                address();
+            }
+            if(billing(p,e,sum))
             {
                 break;
             }
@@ -547,6 +582,11 @@ void employee()
 
 void initiate_code()
 {
+
+    places
+
+
+
     Ebook = {
         book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 765),
         book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555),
