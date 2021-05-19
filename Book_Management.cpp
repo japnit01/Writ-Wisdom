@@ -5,9 +5,11 @@
 #include <queue>
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 
 int E_count = 0,P_count = 0;
+string user_path = "user_files/",decompress_path = "decompressed_files/";
 
 class book{
     public:
@@ -23,7 +25,7 @@ class book{
 
     book()
     {
-        cout<<"Default Constructor";
+        cout<<"Default Constructor\n";
     }
 
     book(string n, string a, string s, string t, string tp, int p)
@@ -45,8 +47,6 @@ class book{
         quantity = 0;
         filename = "";
     }
-
-    
 };
 
 map<string,book> library;
@@ -165,7 +165,23 @@ void calcfreq(string text)
     huffman(freq);
 }
 
-void info(string name, string author, string subject, string tag, string path)
+bool billing(){
+    cout<<"Order Details\n";
+    int sum = 0;
+    
+    for(auto it = Cart.begin();it!=Cart.end();++it)
+    {
+        string id = it->first;
+        cout<<"Name: "<<library[id].name<<"\n";
+        cout<<setw(6)<<"Price: "<<library[id].price<<setw(15)<<"Item Count: "<<it->second<<"\n";
+        cout<<"-------------------------------------------\n";
+        sum+=((library[id].price)*it->second);
+    }
+
+    return false;
+}
+
+void info(string name, string author, string subject, string tag)
 {
     string inputfile, outputfile;
 
@@ -175,7 +191,7 @@ void info(string name, string author, string subject, string tag, string path)
     ifstream inpfile;
     string s = "", temp;
 
-    inpfile.open(path + inputfile, ios::in);
+    inpfile.open(user_path + inputfile, ios::in);
     if (!inpfile)
     {
         cout << "File not found\n";
@@ -227,7 +243,7 @@ void info(string name, string author, string subject, string tag, string path)
             //cout<<compressed.size()<<"\n";
             outpfile << compressed << endl;
             cout << "File Uploaded"; 
-            book b(name, author, subject, tag, "Ebook", 0);
+            book b(name, author, subject, tag, "ebook", 0);
             b.filename = outputfile;
             Ebook.push_back(b);
             library[b.id] = b;
@@ -237,21 +253,24 @@ void info(string name, string author, string subject, string tag, string path)
     }
 }
 
-void downloadfile(string path)
+void downloadfile()
 {
+    map<int,string> display;
     cout << "\nEbooks\n";
     int count = 1;
     for (int i = 0; i < Ebook.size(); i++)
     {
         if (Ebook[i].price == 0)
         {
-            cout << "\n"
-                 << Ebook[i].subject << "\n";
+            cout << "\n";
+            cout << Ebook[i].subject << "\n";
             cout << "Name: " << Ebook[i].name << "\n";
             cout << Ebook[i].tag << "\nAuthor: " << Ebook[i].author << "\n";
             cout << "Price: " << Ebook[i].price << "\n";
             cout << "\nAdd to Cart --> " << count << "\n";
             cout << "-----------------------------";
+            display[count] = Ebook[i].id;
+            //cout<<count<<" "<<Ebook[i].id<<"\n";
             count++;
         }
     }
@@ -272,8 +291,9 @@ void downloadfile(string path)
                 return ;
             }
             else
-            {
-                string id = Ebook[c].id;
+            {  
+                string id = display[c];
+                //cout<<c<<" "<<id<<"\n";
                 if( Cart[id] == 0)
                 {
                     Cart[id]++;
@@ -292,7 +312,7 @@ void downloadfile(string path)
     } while (ch == 'y');
 }
 
-void addfile(string path)
+void addfile()
 {
     cout << "\nAdd Book\n";
     string name, author, subject, tag;
@@ -305,7 +325,7 @@ void addfile(string path)
     cout << "Tag (Class/Engineering/Medical): \n";
     cin >> tag;
 
-    info(name, author, subject, tag, path);
+    info(name, author, subject, tag);
 }
 
 void cart()
@@ -314,12 +334,57 @@ void cart()
     for(auto it = Cart.begin();it != Cart.end();it++)
     {       string id = it->first;
             cout<<"\n";
-            cout<< "Name: " <<library[id].name << "\n";
-            cout<< library[id].tag << "\nAuthor: " << library[id].author << "\n";
-            cout<< "Price: " << library[id].price << "\n";
+            cout<<"ID: "<<id<<"\n";
+            cout<< "Name: " <<library[id].name<<"\n";
+            cout<< library[id].tag << "\nAuthor: "<< library[id].author<<"\n";
+            cout<< "Price: "<<library[id].price<<"\n";
             cout<< "\nItem count "<<it->second<< "\n";
             cout<< "-----------------------------";
     }
+    cout<<"\n";
+    char ch = 'y';
+    do
+    {
+        //cout<<"1. Add to Cart\n";
+        cout<<"1. Proceed to buy\n";
+        cout<<"2. Edit Cart\n";
+        cout<<"3. Exit\n";
+        int choice;
+        cout<<"Enter Choice: ";
+        cin>>choice;
+
+        if(choice == 1)
+        {
+            if(billing())
+            {
+                break;
+            }
+        }
+        else if(choice == 2)
+        {
+            cout<<"\n";
+            cout<<"To delete a item enter it's ID\n";
+            cout<<"Enter the code: ";
+            string q;
+            cin>>q;
+            if(Cart.find(q) != Cart.end())
+            {
+                Cart[q]--;
+                if(Cart[q] == 0)
+                {
+                    Cart.erase(q);
+                }
+            }
+            else{
+                cout<<"\nNo item found\n";
+            }
+        }
+        else if(choice == 3)
+        {
+            return ;
+        }
+
+    }while(ch == 'y');
 }
 
 void bookbank()
@@ -327,17 +392,16 @@ void bookbank()
     cout << "\n\nBook Bank\n";
     cout << "1. Upload Books\n";
     cout << "2. Download Books\n";
-    string path = "user_files/";
     int choice1;
     cout << "Enter Choice: ";
     cin >> choice1;
     if (choice1 == 1)
     {
-        addfile(path);
+        addfile();
     }
     else if (choice1 == 2)
     {
-        downloadfile(path);
+        downloadfile();
     }
 }
 
@@ -348,7 +412,91 @@ void orderstatus()
 
 void orderbook()
 {
-    cout << "Order Book\n";
+    cout << "Books\n";
+    int count = 1;
+    map<int,string> display;
+    for (int i = 0; i < Pbook.size(); i++)
+    {
+        if (Pbook[i].price != 0)
+        {
+            cout << "\n"
+                 << Pbook[i].subject << "\n";
+            cout << "Name: " << Pbook[i].name << "\n";
+            cout << Pbook[i].tag << "\nAuthor: " << Pbook[i].author << "\n";
+            cout << "Price: " << Pbook[i].price << "\n";
+            cout<<"In Stock: "<<Pbook[i].quantity<<"\n";
+            cout << "\nAdd to Cart --> " << count << "\n";
+            cout << "-----------------------------";
+            display[count] = Pbook[i].id;
+            count++;
+        }
+    }
+
+    for (int i = 0; i < Ebook.size(); i++)
+    {
+        if (Ebook[i].price != 0)
+        {
+            cout << "\n"
+                 << Ebook[i].subject << "\n";
+            cout << "Name: " << Ebook[i].name << "\n";
+            cout << Ebook[i].tag << "\nAuthor: " << Ebook[i].author << "\n";
+            cout << "Price: " << Ebook[i].price << "\n";
+            cout << "\nAdd to Cart --> " << count << "\n";
+            cout << "-----------------------------";
+            display[count] = Ebook[i].id;
+            count++;
+        }
+    }
+
+    int c;
+    cout << "\n Exit --> " << count;
+    int exit = count;
+    char ch = 'y';
+
+    do
+    {
+        cout << "\nEnter Choice: ";
+        cin >> c;
+        if (c <= exit)
+        {
+            if (c == exit)
+            {
+                return ;
+            }
+            else
+            {   string id = display[c];
+
+                if(id.substr(0,2) == "EB")
+                {
+                    if(Cart[id] == 0)
+                    {
+                        Cart[id]++;
+                    }
+                    else
+                    {
+                        cout<<"\nOnly one can be added";
+                    }
+                }
+                else if(id.substr(0,2) == "PB")
+                {
+
+                    if(Cart[id] < library[id].quantity)
+                    {
+                        Cart[id]++;
+                    }
+                    else
+                    {
+                        cout<<"\nNo more in stock";
+                    }
+                }
+            }
+        }
+        else
+        {
+            cout << "\nPlease input correct choice";
+        }
+
+    } while (ch == 'y');
 }
 
 void customer()
@@ -360,7 +508,7 @@ void customer()
         cout << "\n\n\nCustomer\n";
         cout << "1. Book bank\n";
         cout << "2. Order Books\n";
-        cout << "3. Check Order Status\n";
+        cout << "3. Order Status\n";
         cout << "4. Cart\n";
         cout << "5. Exit\n";
         cout << "Enter Choice: ";
@@ -400,11 +548,17 @@ void employee()
 void initiate_code()
 {
     Ebook = {
-        book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 0),
-        book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 0),
-        book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook", 0),
-        book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook", 0),
-        book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "ebook", 0)};
+        book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 765),
+        book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555),
+        book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455),
+        book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300),
+        book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "ebook", 100),
+        book("NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0),
+        book ("NCERT physics class 11","NCERT","Physics","11th","ebook",0),
+        book ("NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0),
+        book ("NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0),
+        book (" NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0),
+        book ("NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0)};
 
 
 
@@ -420,6 +574,12 @@ void initiate_code()
     Ebook[2].filename = "Theory of Computation";
     Ebook[3].filename = "Discrete Mathematics";
     Ebook[4].filename = "EVS";
+    Ebook[5].filename = "NCERT chemistry class 11";
+    Ebook[6].filename = "NCERT physics class 11";
+    Ebook[7].filename = "NCERT mathematics class 11";
+    Ebook[8].filename = "NCERT chemistry class 12";
+    Ebook[9].filename = "NCERT physics class 12";
+    Ebook[10].filename = "NCERT mathematics class 11";
 
     Pbook = {
         book("Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
@@ -427,7 +587,24 @@ void initiate_code()
         book("New Simplified Physics 11th", "SL Arora", "Physics", "11", "pbook", 1049),
         book("New Simplified Physics 12th", "SL Arora", "Physics", "12", "pbook", 1049),
         book("Introduction to Algorithms", "T.H.Cormen, C.E.Leiserson, R.L Rivest", "Algorithm Design and Analysis", "Engineering", "pbook", 830),
-        book("Methods of Real Analysis", "Richard R. Goldberg", "Real Analysis", "Engineering", "pbook", 945)};
+        book("Methods of Real Analysis", "Richard R. Goldberg", "Real Analysis", "Engineering", "pbook", 945),        
+        book ("Cengage Calculus for JEE Advanced", "G. Tewani", "mathematics", "engineering", "pbook",899),
+        book ("Cengage Coordinate geometry for JEE Advanced", "G. Tewani", "mathematics", "engineering", "pbook",739),
+        book ("Cengage Mechanics-1 for JEE Advanced", "B.M. Sharma", "physics", "engineering", "pbook",849),
+        book ("Elementary Problems in Organic Chemistry", "MS Chouhan", "chemistry", "engineering", "pbook",499)};
+
+    Pbook[0].quantity = 3;
+    Pbook[1].quantity = 1;
+    Pbook[2].quantity = 2;
+    Pbook[3].quantity = 3;
+    Pbook[4].quantity = 4;
+    Pbook[5].quantity = 2;
+    Pbook[6].quantity = 1;
+    Pbook[7].quantity = 3;
+    Pbook[8].quantity = 1;
+    Pbook[9].quantity = 2;
+    Pbook[10].quantity = 3;
+
 
     for(int i = 0;i<Ebook.size();i++)
     {
