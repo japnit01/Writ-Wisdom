@@ -7,6 +7,8 @@
 #include <fstream>
 using namespace std;
 
+int E_count = 0,P_count = 0;
+
 class book{
     public:
     string id;
@@ -19,9 +21,21 @@ class book{
     string type;
     string filename;
 
-    book(string id,string n, string a, string s, string t, string tp, int p)
+    book()
     {
-        id = id;
+        cout<<"Default Constructor";
+    }
+
+    book(string n, string a, string s, string t, string tp, int p)
+    {
+        if(tp == "ebook")
+        {
+            id = "EB" + to_string(E_count++);
+        }
+        else if( tp == "pbook")
+        {
+            id = "PB" + to_string(P_count++);
+        }        
         name = n;
         author = a;
         subject = s;
@@ -36,7 +50,7 @@ class book{
 };
 
 map<string,book> library;
-vector<int> Cart;
+map<string,int> Cart;
 vector<book> Ebook;
 vector<book> Pbook;
 
@@ -213,9 +227,10 @@ void info(string name, string author, string subject, string tag, string path)
             //cout<<compressed.size()<<"\n";
             outpfile << compressed << endl;
             cout << "File Uploaded"; 
-            book b("EB" + to_string(Ebook.size()+1),name, author, subject, tag, "Ebook", 0);
+            book b(name, author, subject, tag, "Ebook", 0);
             b.filename = outputfile;
             Ebook.push_back(b);
+            library[b.id] = b;
         }
 
         outpfile.close();
@@ -248,7 +263,7 @@ void downloadfile(string path)
     
     do
     {
-        cout << "Enter Choice";
+        cout << "\nEnter Choice: ";
         cin >> c;
         if (c <= exit)
         {
@@ -256,18 +271,22 @@ void downloadfile(string path)
             {
                 return ;
             }
-            if( Cart[c] == 0)
-            {
-                Cart[c]++;
-            }
             else
             {
-                cout<<"Only one can be added";
+                string id = Ebook[c].id;
+                if( Cart[id] == 0)
+                {
+                    Cart[id]++;
+                }
+                else
+                {
+                    cout<<"\nOnly one can be added";
+                }
             }
         }
         else
         {
-            cout << "Please input correct choice";
+            cout << "\nPlease input correct choice";
         }
 
     } while (ch == 'y');
@@ -292,15 +311,15 @@ void addfile(string path)
 void cart()
 {
     cout << "\nCart\n";
-    // for(auto it = Cart.begin();it != Cart.end();it++)
-    // {   
-    //         cout<<"\n";
-    //         cout<< "Name: " <<  it->first.name << "\n";
-    //         cout<< it->first.tag << "\nAuthor: " << it->first.author << "\n";
-    //         cout<< "Price: " << it->first.price << "\n";
-    //         cout<< "\nItem count"<<it->second<< "\n";
-    //         cout<< "-----------------------------";
-    // }
+    for(auto it = Cart.begin();it != Cart.end();it++)
+    {       string id = it->first;
+            cout<<"\n";
+            cout<< "Name: " <<library[id].name << "\n";
+            cout<< library[id].tag << "\nAuthor: " << library[id].author << "\n";
+            cout<< "Price: " << library[id].price << "\n";
+            cout<< "\nItem count "<<it->second<< "\n";
+            cout<< "-----------------------------";
+    }
 }
 
 void bookbank()
@@ -334,17 +353,16 @@ void orderbook()
 
 void customer()
 {
-    cout << "\n\n\nCustomer\n";
-    cout << "1. Book bank\n";
-    cout << "2. Order Books\n";
-    cout << "3. Check Order Status\n";
-    cout << "4. Cart\n";
-    cout << "5. Exit\n";
-
     char ch = 'y';
 
     do
     {
+        cout << "\n\n\nCustomer\n";
+        cout << "1. Book bank\n";
+        cout << "2. Order Books\n";
+        cout << "3. Check Order Status\n";
+        cout << "4. Cart\n";
+        cout << "5. Exit\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;
@@ -354,13 +372,13 @@ void customer()
             bookbank();
             break;
         case 2:
-            //orderbook();
+            orderbook();
             break;
         case 3:
-            //orderstatus();
+            orderstatus();
             break;
         case 4:
-            //cart();
+            cart();
             break;
         case 5:
             cout << "\nExiting....\n";
@@ -382,11 +400,13 @@ void employee()
 void initiate_code()
 {
     Ebook = {
-        book("EB1","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "Ebook", 0),
-        book("EB2","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "Ebook", 0),
-        book("EB3","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "Ebook", 0),
-        book("EB4","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "Ebook", 0),
-        book("EB5","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "Ebook", 0)};
+        book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 0),
+        book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 0),
+        book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook", 0),
+        book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook", 0),
+        book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "ebook", 0)};
+
+
 
     /*for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
     {
@@ -402,12 +422,12 @@ void initiate_code()
     Ebook[4].filename = "EVS";
 
     Pbook = {
-        book("PB1","Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
-        book("PB2","Understanding Physics", "D.C. Pandey", "Physics", "Engineering", "pbook", 432),
-        book("PB3","New Simplified Physics 11th", "SL Arora", "Physics", "11", "pbook", 1049),
-        book("PB4","New Simplified Physics 12th", "SL Arora", "Physics", "12", "pbook", 1049),
-        book("PB5","Introduction to Algorithms", "T.H.Cormen, C.E.Leiserson, R.L Rivest", "Algorithm Design and Analysis", "Engineering", "pbook", 830),
-        book("PB6","Methods of Real Analysis", "Richard R. Goldberg", "Real Analysis", "Engineering", "pbook", 945)};
+        book("Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
+        book("Understanding Physics", "D.C. Pandey", "Physics", "Engineering", "pbook", 432),
+        book("New Simplified Physics 11th", "SL Arora", "Physics", "11", "pbook", 1049),
+        book("New Simplified Physics 12th", "SL Arora", "Physics", "12", "pbook", 1049),
+        book("Introduction to Algorithms", "T.H.Cormen, C.E.Leiserson, R.L Rivest", "Algorithm Design and Analysis", "Engineering", "pbook", 830),
+        book("Methods of Real Analysis", "Richard R. Goldberg", "Real Analysis", "Engineering", "pbook", 945)};
 
     for(int i = 0;i<Ebook.size();i++)
     {
@@ -425,12 +445,13 @@ int main()
     initiate_code();
     //cout << Ebook.size();
     cout << "\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
-    cout << "Log in \n";
-    cout << "User --> 1    Employee --> 2    Exit --> 3\n";
+    
     char ch = 'y';
 
     do
     {
+        cout << "Log in \n";
+        cout << "User --> 1    Employee --> 2    Exit --> 3\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;
