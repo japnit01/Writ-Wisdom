@@ -1,4 +1,5 @@
 #include<bits/stdc++.h>
+#include <dirent.h>
 using namespace std;
 
 
@@ -50,7 +51,7 @@ void codestable(minheapnode* root,string str)
 
     if(root->l != '#')
     {
-        //cout<<root->l<<": "<<str<<"\n";
+        cout<<root->l<<": "<<str<<"\n";
         codes[root->l] = str;
     }
 
@@ -174,6 +175,30 @@ void decodehuffman(string text)
 */
 int main(){
     
+    DIR *dir; struct dirent *diread;
+    vector<string> files;
+
+    if ((dir = opendir("files")) != nullptr)
+    {   int count = 0;
+        while ((diread = readdir(dir)) != nullptr) 
+        {   
+            if(count>=2)
+            {
+                files.push_back(diread->d_name);
+            }
+            count++;
+            
+        }
+        closedir (dir);
+    } 
+    else {
+        perror ("opendir");
+        return;
+    }
+  
+
+
+
     string inputfile,outputfile;
 
     cout<<"Enter the name of file: \n";
@@ -196,6 +221,8 @@ int main(){
             //cout<<temp<<"\n";
             s+=temp;
         }
+        //transform(s.begin(), s.end(), s.begin(), ::tolower);
+
         inpfile.close();
         calcfreq(s);
       
@@ -218,7 +245,7 @@ int main(){
     
         ofstream outpfile;
 
-        outputfile = inputfile.substr(0,inputfile.size()-4) + "_compressed.txt";
+        outputfile = inputfile + "_compressed.txt";
         outpfile.open("compressed_files/" + outputfile,ios::out);
         
         if(!outpfile)

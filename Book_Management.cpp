@@ -11,7 +11,7 @@
 using namespace std;
 
 int E_count = 0,P_count = 0;
-string user_path = "user_files/",decompress_path = "decompressed_files/",path = "files/";
+string user_path = "user_files/",decompress_path = "decompressed_files/",initiate_path = "files/";
 string location;
 class book{
     public:
@@ -138,7 +138,7 @@ void codestable(minheapnode *root, string str)
 
     if (root->l != '#')
     {
-        //cout<<root->l<<": "<<str<<"\n";
+        cout<<root->l<<": "<<str<<"\n";
         codes[root->l] = str;
     }
 
@@ -214,8 +214,8 @@ string dectext = "";
 void decodetext(string text,minheapnode *root)
 {   
     minheapnode *temp = root;
-    cout<<text.size()<<"\n";
-    for(int i=0;i<text.size();i++)
+    //cout<<text.size()<<"\n";
+    for(long long i=0;i<text.size();i++)
     {
         //cout<<i<<" ";
         root = temp;
@@ -288,14 +288,16 @@ void decodehuffman(string text)
     minheapnode *temp = reroot;
     int textsize = text.size()-32-n;
     decodetext(text.substr(32+n,text.size()-32-n),reroot);
+    //cout<<"hereto\n";
 }
 
 void download(vector<string> eb,int e)
 {   
     for(int i=0;i<e;i++)
-    {
+    {   
+        cout<<eb[i]<<"\n";
         string inputfile,outputfile;
-
+        
         inputfile = library[eb[i]].filename;
 
         ifstream inpfile;
@@ -319,7 +321,7 @@ void download(vector<string> eb,int e)
             inpfile.close();
             //cout<<s.size();
             decodehuffman(s);
-            cout<<dectext<<"\n";
+            //cout<<dectext<<"\n";
 
             ofstream outpfile;
             
@@ -337,6 +339,7 @@ void download(vector<string> eb,int e)
             {
                 //cout<<dectext.size()<<"\n";
                 outpfile<<dectext<<endl;
+                cout<<"File downloaded\n";
             }
             outpfile.close();
         }
@@ -405,6 +408,7 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 }
 
 bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
+    codes.clear();
     cout<<"Order Summary\n";
     cout<<"Item Ordered: "<<p+e<<"\n";
     cout<<"Ebook: "<<e<<"\n";
@@ -413,13 +417,22 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
 
     cout<<"Avail Discount Coupons: ";
     string coupon;
-    cin>>coupon;
+    //cin>>coupon;
     cout<<"\n";
     cout<<"\n1. UPI(Patym/Phonepe/Gpay)\n";
     cout<<"2. Credit Card\n";
     cout<<"3. Debit Card\n";
     
-    cout<<"Payment Succesfull!!!\n";
+    int amount;
+    cout<<"Enter Amount: ";
+    cin>>amount;
+    if(amount == sum)
+    {
+        cout<<"Payment Succesfull!!!\n";
+    }
+    else{
+        return false;
+    }
 
     if(p!=0)
     {
@@ -438,13 +451,21 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
-void info(string inputfile,string name, string author, string subject, string tag,string type,int price)
-{
+void info(int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
+{   string path;
+    if(a ==1)
+    {
+        path = initiate_path; 
+    }
+    else if(a ==0)
+    {
+        path = user_path;
+    }
     string outputfile;
 
     ifstream inpfile;
     string s = "", temp;
-
+    cout<<inputfile<<"\n";
     inpfile.open(path + inputfile, ios::in);
     if (!inpfile)
     {
@@ -460,6 +481,7 @@ void info(string inputfile,string name, string author, string subject, string ta
             s += temp;
         }
         inpfile.close();
+        codes.clear();
         calcfreq(s);
 
         int n = compressed.size();
@@ -482,7 +504,7 @@ void info(string inputfile,string name, string author, string subject, string ta
 
         ofstream outpfile;
 
-        if (inputfile.substr(inputfile.size() - 4, 4) == ".txt")
+        if (inputfile.size()>4 && inputfile.substr(inputfile.size() - 4, 4) == ".txt")
             outputfile = inputfile.substr(0, inputfile.size() - 4) + "_compressed.txt";
         else
             outputfile = inputfile + "_compressed.txt";
@@ -582,7 +604,7 @@ void addfile()
     string inputfile;
     cout << "Enter the name of file: \n";
     cin >> inputfile;
-    info(inputfile,name, author, subject, tag,"ebook",0);
+    info(0,inputfile,name, author, subject, tag,"ebook",0);
 }
 
 void cart()
@@ -847,17 +869,17 @@ void initiate_code()
         {1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"},{10,"j"}
     };
 
-    info("Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
-    info("Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
-    info("Theory of Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
-    info("Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
-    info("EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering","ebook", 100);
-    info("NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0);
-    info("NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0);
-    info("NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0);
-    info("NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0);
-    info("NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0);
-    info("NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0);
+    info(1,"Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
+    info(1,"Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
+    info(1,"Theory of Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
+    info(1,"Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
+    info(1,"EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering","ebook", 100);
+    info(1,"NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0);
+    info(1,"NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0);
+    info(1,"NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0);
+    info(1,"NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0);
+    info(1,"NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0);
+    info(1,"NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0);
         
 
     // Ebook[0].filename = "Machine Learning";

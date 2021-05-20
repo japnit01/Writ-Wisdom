@@ -1,15 +1,15 @@
 INFINITE SERIES
-A.1.1 Introduction
-As discussed in the Chapter 9 on Sequences and Series, a sequence a1, a2, ..., an, ...
+A. .  Introduction
+As discussed in the Chapter 9 on Sequences and Series, a sequence a , a2, ..., an, ...
 having infinite number of terms is called infinite sequence and its indicated sum, i.e.,
-a1 + a2 + a3 + ... + an + ... is called an infinte series associated with infinite sequence.
+a  + a2 + a3 + ... + an + ... is called an infinte series associated with infinite sequence.
 This series can also be expressed in abbreviated form using the sigma notation, i.e.,
 a
-1 + a
+  + a
 2 + a
 3 + . . . + a
 n + . . . =
-1
+ 
 k
 k
 a
@@ -18,13 +18,13 @@ a
 
 In this Chapter, we shall study about some special types of series which may be
 required in different problem situations.
-A.1.2 Binomial Theorem for any Index
+A. .2 Binomial Theorem for any Index
 In Chapter 8, we discussed the Binomial Theorem in which the index was a positive
 integer. In this Section, we state a more general form of the theorem in which the
 index is not necessarily a whole number. It gives us a particular type of infinite series,
 called Binomial Series. We illustrate few applications, by examples.
 We know the formula
-(1 + x)n = 0 C n + 1 C n x + . . . + C n
+(  + x)n =   C n +   C n x + . . . + C n
 n xn
 Here, n is non-negative integer. Observe that if we replace index n by negative
 integer or a fraction, then the combinations C n
@@ -32,12 +32,12 @@ r do not make any sense.
 We now state (without proof), the Binomial Theorem, giving an infinite series in
 which the index is negative or a fraction and not a whole number.
 Theorem The formula
-( ) ( ) ( )( ) 2 3 1 1 2
-1 1
-1 2 1 2 3
+( ) ( ) ( )( ) 2 3     2
+   
+  2   2 3
 m m m m m m
 x mx x x ...
 . . .
 − − −
 + = + + + +
-holds whenever x <1.
+holds whenever x < .

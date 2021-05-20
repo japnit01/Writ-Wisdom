@@ -19,7 +19,7 @@ struct minheapnode{
 void decodetext(string text,minheapnode *root)
 {
     minheapnode *temp = root;
-    cout<<text.size()<<"\n";
+    //cout<<text.size()<<"\n";
     for(int i=0;i<text.size();i++)
     {
         //cout<<i<<" ";
@@ -38,7 +38,7 @@ void decodetext(string text,minheapnode *root)
             }
         }
         dectext+=root->l;
-        //cout<<dectext<<"\n";
+        cout<<dectext<<"\n";
         i--;
     }
 }
@@ -87,7 +87,6 @@ void decodetree(string text,int n,minheapnode* reroot)
        c++;
        decodetree(text,n,reroot->right); 
     }    
-    return;
 }
 
 void decodehuffman(string text)
@@ -137,7 +136,7 @@ int main()
         inpfile.close();
         //cout<<s.size();
         decodehuffman(s);
-        cout<<dectext<<"\n";
+        //cout<<dectext<<"\n";
 
         ofstream outpfile;
         
