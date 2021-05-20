@@ -1,30 +1,43 @@
-THE SOLID STATE
-From our earlier studies, we know that liquids and gases
-are called fluids because of their ability to flow. The
-fluidity in both of these states is due to the fact that the
-molecules are free to move about. On the contrary, the
-constituent particles in solids have fixed positions and
-can only oscillate about their mean positions. This
-explains the rigidity in solids. These properties depend
-upon the nature of constituent particles and the binding
-forces operating between them. The correlation between
-structure and properties helps in the discovery of new
-solid materials with desired properties. For example,
-carbon nanotubes are new materials that have potential
-to provide material that are tougher than steel, lighter
-than aluminium and have more conductive property than
-copper. Such materials may play an expanding role in
-future development of science and society. Some other
-materials which are expected to play an important role
-in future are high temperature superconductors,
-magnetic materials, biodegradable polymers for
-packaging, biocompliant solids for surgical implants, etc.
-Thus, the study of this state becomes more important in
-the present scenario.
-In this Unit, we shall discuss different possible
-arrangements of particles resulting in several types of
-structures and explore why different arrangements of
-structural units lend different properties to solids. We
-will also learn how these properties get modified due to
-the structural imperfections or by the presence of
-impurities in minute amounts.
+INFINITE SERIES
+A.1.1 Introduction
+As discussed in the Chapter 9 on Sequences and Series, a sequence a1, a2, ..., an, ...
+having infinite number of terms is called infinite sequence and its indicated sum, i.e.,
+a1 + a2 + a3 + ... + an + ... is called an infinte series associated with infinite sequence.
+This series can also be expressed in abbreviated form using the sigma notation, i.e.,
+a
+1 + a
+2 + a
+3 + . . . + a
+n + . . . =
+1
+k
+k
+a
+¥
+=
+
+In this Chapter, we shall study about some special types of series which may be
+required in different problem situations.
+A.1.2 Binomial Theorem for any Index
+In Chapter 8, we discussed the Binomial Theorem in which the index was a positive
+integer. In this Section, we state a more general form of the theorem in which the
+index is not necessarily a whole number. It gives us a particular type of infinite series,
+called Binomial Series. We illustrate few applications, by examples.
+We know the formula
+(1 + x)n = 0 C n + 1 C n x + . . . + C n
+n xn
+Here, n is non-negative integer. Observe that if we replace index n by negative
+integer or a fraction, then the combinations C n
+r do not make any sense.
+We now state (without proof), the Binomial Theorem, giving an infinite series in
+which the index is negative or a fraction and not a whole number.
+Theorem The formula
+( ) ( ) ( )( ) 2 3 1 1 2
+1 1
+1 2 1 2 3
+m m m m m m
+x mx x x ...
+. . .
+− − −
++ = + + + +
+holds whenever x <1.
