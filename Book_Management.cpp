@@ -292,7 +292,7 @@ void decodehuffman(string text)
 
 void download(vector<string> eb,int e)
 {   
-    for(int i=0;i<eb.size();i++)
+    for(int i=0;i<e;i++)
     {
         string inputfile,outputfile;
 
@@ -438,12 +438,9 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
-void info(string name, string author, string subject, string tag)
+void info(string inputfile,string name, string author, string subject, string tag)
 {
-    string inputfile, outputfile;
-
-    cout << "Enter the name of file: \n";
-    cin >> inputfile;
+    string outputfile;
 
     ifstream inpfile;
     string s = "", temp;
@@ -582,7 +579,10 @@ void addfile()
     cout << "Tag (Class/Engineering/Medical): \n";
     cin >> tag;
 
-    info(name, author, subject, tag);
+    string inputfile;
+    cout << "Enter the name of file: \n";
+    cin >> inputfile;
+    info(inputfile,name, author, subject, tag);
 }
 
 void cart()
@@ -847,61 +847,58 @@ void initiate_code()
         {1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"},{10,"j"}
     };
 
-    Ebook = {
-        book("Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 765),
-        book("Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555),
-        book("Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455),
-        book("Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300),
-        book("Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "ebook", 100),
-        book("NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0),
-        book ("NCERT physics class 11","NCERT","Physics","11th","ebook",0),
-        book ("NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0),
-        book ("NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0),
-        book (" NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0),
-        book ("NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0)
-        
-    };
-
-    DIR *dir; struct dirent *diread;
-    vector<string> files;
-
-    if ((dir = opendir("files")) != nullptr) {
-        while ((diread = readdir(dir)) != nullptr) {
-            files.push_back(diread->d_name);
-        }
-        closedir (dir);
-    } else {
-        perror ("opendir");
-        return;
-    }
-
     
-    for (int i = 0;i<files.size();i++) 
-        cout << files[i] << "\n";
+        info("Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 765)
+        info("Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555)
+        info("Theory of Computation""Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455)
+        info("Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300)
+        info("EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "ebook", 100)
+        info("NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0)
+        info("NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0)
+        info("NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0)
+        info("NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0)
+        info("NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0)
+        info("NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0)
+        
+
+    // Ebook[0].filename = "Machine Learning";
+    // Ebook[1].filename = "Computer Graphics";
+    // Ebook[2].filename = "Theory of Computation";
+    // Ebook[3].filename = "Discrete Mathematics";
+    // Ebook[4].filename = "EVS";                 
+    // Ebook[5].filename = "NCERT chemistry class 11";
+    // Ebook[6].filename = "NCERT physics class 11";
+    // Ebook[7].filename = "NCERT mathematics class 11";
+    // Ebook[8].filename = "NCERT chemistry class 12";
+    // Ebook[9].filename = "NCERT physics class 12";
+    // Ebook[10].filename = "NCERT mathematics class 11";
+
+    //     DIR *dir; struct dirent *diread;
+    // vector<string> files;
+
+    // if ((dir = opendir("files")) != nullptr)
+    // {   int count = 0;
+    //     while ((diread = readdir(dir)) != nullptr) 
+    //     {   
+    //         if(count>=2)
+    //         {
+    //             files.push_back(diread->d_name);
+    //         }
+    //         count++;
+            
+    //     }
+    //     closedir (dir);
+    // } 
+    // else {
+    //     perror ("opendir");
+    //     return;
+    // }
+    // cout<<"here"
+
+    // for (int i = 0;i<files.size();i++) 
+    //     cout << files[i] << "\n";
 
 
-    // for (const auto& dirEntry : fs("files"))
-    //         cout <<dirEntry<<"\n";
-
-
-    /*for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
-    {
-        cout<<itr->leaf()<<"\n";
-    }*/
-
-    //cout << Ebook.size() << " ";
-
-    Ebook[0].filename = "Machine Learning";
-    Ebook[1].filename = "Computer Graphics";
-    Ebook[2].filename = "Theory of Computation";
-    Ebook[3].filename = "Discrete Mathematics";
-    Ebook[4].filename = "EVS";
-    Ebook[5].filename = "NCERT chemistry class 11";
-    Ebook[6].filename = "NCERT physics class 11";
-    Ebook[7].filename = "NCERT mathematics class 11";
-    Ebook[8].filename = "NCERT chemistry class 12";
-    Ebook[9].filename = "NCERT physics class 12";
-    Ebook[10].filename = "NCERT mathematics class 11";
 
     Pbook = {
         book("Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
@@ -930,10 +927,10 @@ void initiate_code()
     Pbook[10].quantity = 3;
 
 
-    for(int i = 0;i<Ebook.size();i++)
-    {
-        library[Ebook[i].id] = Ebook[i];
-    }
+    // for(int i = 0;i<Ebook.size();i++)
+    // {
+    //     library[Ebook[i].id] = Ebook[i];
+    // }
 
     for(int i = 0;i<Pbook.size();i++)
     {
