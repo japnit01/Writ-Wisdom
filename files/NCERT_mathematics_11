@@ -1,0 +1,27 @@
+SETS
+
+1.1 Introduction
+The concept of set serves as a fundamental part of the
+present day mathematics. Today this concept is being used
+in almost every branch of mathematics. Sets are used to
+define the concepts of relations and functions. The study of
+geometry, sequences, probability, etc. requires the knowledge
+of sets.
+The theory of sets was developed by German
+mathematician Georg Cantor (1845-1918). He first
+encountered sets while working on “problems on trigonometric
+series”. In this Chapter, we discuss some basic definitions
+and operations involving sets.
+1.2 Sets and their Representations
+In everyday life, we often speak of collections of objects of a particular kind, such as,
+a pack of cards, a crowd of people, a cricket team, etc. In mathematics also, we come
+across collections, for example, of natural numbers, points, prime numbers, etc. More
+specially, we examine the following collections:
+(i) Odd natural numbers less than 10, i.e., 1, 3, 5, 7, 9
+(ii) The rivers of India
+(iii) The vowels in the English alphabet, namely, a, e, i, o, u
+(iv) Various kinds of triangles
+(v) Prime factors of 210, namely, 2,3,5 and 7
+(vi) The solution of the equation: x
+2 – 5x + 6 = 0, viz, 2 and 3.
+We note that each of the above example is a well-defined collection of objects in

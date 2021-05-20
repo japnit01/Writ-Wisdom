@@ -848,7 +848,7 @@ void initiate_code()
     };
 
     
-        info("Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering", "ebook", 765)
+        info("Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765)
         info("Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555)
         info("Theory of Computation""Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455)
         info("Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300)
