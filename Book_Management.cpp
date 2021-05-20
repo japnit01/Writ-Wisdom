@@ -11,7 +11,7 @@
 using namespace std;
 
 int E_count = 0,P_count = 0;
-string user_path = "user_files/",decompress_path = "decompressed_files/";
+string user_path = "user_files/",decompress_path = "decompressed_files/",path = "files/";
 string location;
 class book{
     public:
@@ -438,14 +438,14 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
-void info(string inputfile,string name, string author, string subject, string tag)
+void info(string inputfile,string name, string author, string subject, string tag,string type,int price)
 {
     string outputfile;
 
     ifstream inpfile;
     string s = "", temp;
 
-    inpfile.open(user_path + inputfile, ios::in);
+    inpfile.open(path + inputfile, ios::in);
     if (!inpfile)
     {
         cout << "File not found\n";
@@ -497,7 +497,7 @@ void info(string inputfile,string name, string author, string subject, string ta
             //cout<<compressed.size()<<"\n";
             outpfile << compressed << endl;
             cout << "File Uploaded\n"; 
-            book b(name, author, subject, tag, "ebook", 0);
+            book b(name, author, subject, tag, "ebook",price);
             b.filename = outputfile;
             Ebook.push_back(b);
             library[b.id] = b;
@@ -582,7 +582,7 @@ void addfile()
     string inputfile;
     cout << "Enter the name of file: \n";
     cin >> inputfile;
-    info(inputfile,name, author, subject, tag);
+    info(inputfile,name, author, subject, tag,"ebook",0);
 }
 
 void cart()
@@ -847,18 +847,17 @@ void initiate_code()
         {1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"},{10,"j"}
     };
 
-    
-        info("Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765)
-        info("Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555)
-        info("Theory of Computation""Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455)
-        info("Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300)
-        info("EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering", "ebook", 100)
-        info("NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0)
-        info("NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0)
-        info("NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0)
-        info("NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0)
-        info("NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0)
-        info("NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0)
+    info("Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
+    info("Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
+    info("Theory of Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
+    info("Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
+    info("EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering","ebook", 100);
+    info("NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0);
+    info("NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0);
+    info("NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0);
+    info("NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0);
+    info("NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0);
+    info("NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0);
         
 
     // Ebook[0].filename = "Machine Learning";
