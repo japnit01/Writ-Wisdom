@@ -5,9 +5,9 @@
 #include <list>
 #include <stack>
 #include <queue>
-// #include <boost/filesystem.hpp>
 #include <fstream>
 #include <iomanip>
+#include <dirent.h>
 using namespace std;
 
 int E_count = 0,P_count = 0;
@@ -123,12 +123,6 @@ struct cmp
     }
 };
 
-void address()
-{
-    cout<<"Enter Address: ";
-    cin>>location;
-}
-
 void text_encode(string text)
 {
     for (int i = 0; i < text.size(); i++)
@@ -215,9 +209,140 @@ void calcfreq(string text)
     huffman(freq);
 }
 
-void download()
-{
+string dectext = "";
 
+void decodetext(string text,minheapnode *root)
+{   
+    minheapnode *temp = root;
+    cout<<text.size()<<"\n";
+    for(int i=0;i<text.size();i++)
+    {
+        //cout<<i<<" ";
+        root = temp;
+        while(root->l == '#' && i<text.size())
+        {
+            if(text[i] == '0')
+            {   
+                i++;
+                root = root->left;
+            }
+            else if(text[i] == '1')
+            {
+                i++;
+                root = root->right;
+            }
+        }
+        dectext+=root->l;
+        //cout<<dectext<<"\n";
+        i--;
+    }
+}
+
+
+int dectreec = 0;
+void decodetree(string text,int n,minheapnode* reroot)
+{   
+    if(reroot->l !='#')
+    {
+        return ;
+    } 
+
+    if(text[dectreec]!='1' && text[dectreec]!='0')
+    {
+        reroot->l = text[dectreec];
+        dectreec++;
+        return ;
+    }
+
+    if(text[dectreec] == '0')
+    {
+        reroot->left = new minheapnode('#',-1);
+        dectreec++;
+        decodetree(text,n,reroot->left);
+    
+    }
+
+    if(text[dectreec] == '1')
+    {
+       reroot->right = new minheapnode('#',-1);
+       dectreec++;
+       decodetree(text,n,reroot->right); 
+    }    
+    return;
+}
+
+void decodehuffman(string text)
+{   
+    minheapnode *reroot;
+    reroot = new minheapnode('#',-1);
+    
+    int n = stoi(text.substr(0,32),0,2);
+    //cout<<n<<""<<text.substr(0,32)<<"\n";
+    //cout<<text.size()<<"\n";
+    //text = text.substr(32,text.size()-32);
+    //cout<<text.size()<<"\n";
+    
+    decodetree(text.substr(32,n),n,reroot);
+    codestable(reroot,"");
+    
+    minheapnode *temp = reroot;
+    int textsize = text.size()-32-n;
+    decodetext(text.substr(32+n,text.size()-32-n),reroot);
+}
+
+void download(vector<string> eb,int e)
+{   
+    for(int i=0;i<eb.size();i++)
+    {
+        string inputfile,outputfile;
+
+        inputfile = library[eb[i]].filename;
+
+        ifstream inpfile;
+        string s="",temp;
+
+        inpfile.open("compressed_files/" + inputfile,ios::in);
+        
+        if(!inpfile)
+        {
+            cout<<"File not found\n";
+        }
+        else
+        {
+            while(!inpfile.eof())
+            {
+                getline(inpfile,temp);
+                //cout<<temp<<"\n";
+                //cout<<temp.size()<<"\n";
+                s+=temp;
+            }
+            inpfile.close();
+            //cout<<s.size();
+            decodehuffman(s);
+            cout<<dectext<<"\n";
+
+            ofstream outpfile;
+            
+            if(inputfile.substr(inputfile.size()-15,inputfile.size()) == "_compressed.txt")
+                outputfile = inputfile.substr(0,inputfile.size()-15) + "_decompressed.txt";
+            else
+                outputfile = inputfile + "_decompressed.txt";
+            outpfile.open(user_path + outputfile,ios::out);
+            
+            if(!outpfile)
+            {
+                cout<<"File not created\n";
+            }
+            else
+            {
+                //cout<<dectext.size()<<"\n";
+                outpfile<<dectext<<endl;
+            }
+            outpfile.close();
+        }
+        codes.clear();
+    }
+    
 }
 
 // Using Dijkstra's Algorithm
@@ -279,9 +404,9 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 
 }
 
-bool billing(int p,int e,int sum){
+bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     cout<<"Order Summary\n";
-    cout<<"Item Ordered: "<<Cart.size()<<"\n";
+    cout<<"Item Ordered: "<<p+e<<"\n";
     cout<<"Ebook: "<<e<<"\n";
     cout<<"Printed Book: "<<p<<"\n";
     cout<<"Total: "<<sum<<"\n";
@@ -289,22 +414,28 @@ bool billing(int p,int e,int sum){
     cout<<"Avail Discount Coupons: ";
     string coupon;
     cin>>coupon;
-
-    cout<<"1. UPI(Patym/Phonepe/Gpay)";
-    cout<<"2. Credit Card";
-    cout<<"3. Debit Card";
+    cout<<"\n";
+    cout<<"\n1. UPI(Patym/Phonepe/Gpay)\n";
+    cout<<"2. Credit Card\n";
+    cout<<"3. Debit Card\n";
     
     cout<<"Payment Succesfull!!!\n";
 
-    string source = "Keshav Puram";
-    string destination;
-    cout<<"\n\nEnter the place for collecting the order : ";
-    cin>>destination;
+    if(p!=0)
+    {
+        string source = "Keshav Puram";
+        string destination;
+        cout<<"\nEnter the place for collecting the order : ";
+        cin>>destination;
+        deliver(g.adj,g.V,source,destination);
+    }
+    if(e!=0)
+    {
+        download(eb,e);
+    }
     
-    deliver(g.adj,g.V,source,destination);
-    download();
-
-    return false;
+    
+    return true;
 }
 
 void info(string name, string author, string subject, string tag)
@@ -368,14 +499,14 @@ void info(string name, string author, string subject, string tag)
         {
             //cout<<compressed.size()<<"\n";
             outpfile << compressed << endl;
-            cout << "File Uploaded"; 
+            cout << "File Uploaded\n"; 
             book b(name, author, subject, tag, "ebook", 0);
             b.filename = outputfile;
             Ebook.push_back(b);
             library[b.id] = b;
         }
-
         outpfile.close();
+        codes.clear();
     }
 }
 
@@ -389,11 +520,11 @@ void downloadfile()
         if (Ebook[i].price == 0)
         {
             cout << "\n";
-            cout << Ebook[i].subject << "\n";
-            cout << "Name: " << Ebook[i].name << "\n";
-            cout << Ebook[i].tag << "\nAuthor: " << Ebook[i].author << "\n";
-            cout << "Price: " << Ebook[i].price << "\n";
-            cout << "\nAdd to Cart --> " << count << "\n";
+            cout << Ebook[i].subject<<"\n";
+            cout << "Name: "<<Ebook[i].name<<"\n";
+            cout << Ebook[i].tag<<"\nAuthor: "<<Ebook[i].author<<"\n";
+            cout << "Price: "<<Ebook[i].price<<"\n";
+            cout << "\nAdd to Cart --> "<<count<<"\n";
             cout << "-----------------------------";
             display[count] = Ebook[i].id;
             //cout<<count<<" "<<Ebook[i].id<<"\n";
@@ -456,6 +587,8 @@ void addfile()
 
 void cart()
 {
+    vector<string> pb;
+    vector<string> eb;
     cout << "\nCart\n";
     int sum = 0,p = 0,e = 0;
     for(auto it = Cart.begin();it != Cart.end();it++)
@@ -468,11 +601,14 @@ void cart()
             sum+=((library[id].price)*it->second);
             if(library[id].type == "ebook")
             {
-                e++;
+                e+=it->second;
+                eb.push_back(id);
             }
             else
             {
-                p++;
+                p+=it->second;
+                pb.push_back(id);
+
             }
     }
     cout<<"Total: "<<sum<<"\n";
@@ -488,12 +624,10 @@ void cart()
         cin>>choice;
 
         if(choice == 1)
-        {   if(p!=0)
+        {   
+            if(billing(p,e,sum,eb,pb))
             {
-                address();
-            }
-            if(billing(p,e,sum))
-            {
+                Cart.clear();
                 break;
             }
         }
@@ -728,6 +862,26 @@ void initiate_code()
         
     };
 
+    DIR *dir; struct dirent *diread;
+    vector<string> files;
+
+    if ((dir = opendir("files")) != nullptr) {
+        while ((diread = readdir(dir)) != nullptr) {
+            files.push_back(diread->d_name);
+        }
+        closedir (dir);
+    } else {
+        perror ("opendir");
+        return;
+    }
+
+    
+    for (int i = 0;i<files.size();i++) 
+        cout << files[i] << "\n";
+
+
+    // for (const auto& dirEntry : fs("files"))
+    //         cout <<dirEntry<<"\n";
 
 
     /*for (directory_iterator itr( "files" ); itr != end_itr; ++itr)
