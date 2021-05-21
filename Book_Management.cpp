@@ -7,6 +7,7 @@
 #include <queue>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 #include <dirent.h>
 using namespace std;
 
@@ -450,6 +451,14 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
+bool compare(book a, book b)
+{
+    if(a.name < b.name)
+        return true;
+
+    return false;
+}
+
 void info(int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
 {   string path;
     if(a ==1)
@@ -523,6 +532,9 @@ void info(int a,string inputfile,string name, string author, string subject, str
             Ebook.push_back(b);
             library[b.id] = b;
         }
+
+        sort(Ebook.begin(),Ebook.end(),compare);
+
         outpfile.close();
         codes.clear();
     }
@@ -947,6 +959,8 @@ void initiate_code()
     Pbook[8].quantity = 1;
     Pbook[9].quantity = 2;
     Pbook[10].quantity = 3;
+
+    sort(Pbook.begin(),Pbook.end(),compare);
 
     for(int i = 0;i<Pbook.size();i++)
     {
