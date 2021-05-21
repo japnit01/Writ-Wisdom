@@ -791,10 +791,14 @@ void orderbook()
     } while (ch == 'y');
 }
 
+void search()
+{
+
+}
+
 void customer()
 {
     char ch = 'y';
-
     do
     {
         cout << "\n\n\nCustomer\n";
@@ -802,39 +806,37 @@ void customer()
         cout << "2. Order Books\n";
         cout << "3. Order Status\n";
         cout << "4. Cart\n";
-        cout << "5. Exit\n";
+        cout << "5. Search\n";
+        cout << "6. Exit\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;
         switch (choice1)
         {
-        case 1:
-            bookbank();
-            break;
-        case 2:
-            orderbook();
-            break;
-        case 3:
-            orderstatus();
-            break;
-        case 4:
-            cart();
-            break;
-        case 5:
-            cout << "\nExiting....\n";
-            _Exit(10);
-            break;
-        default:
-            "\nWrong Choice\n";
-        }
-        cout << "\nWant to retry(Y/y): ";
-        cin >> ch;
+            case 1:
+                bookbank();
+                break;
+            case 2:
+                orderbook();
+                break;
+            case 3:
+                orderstatus();
+                break;
+            case 4:
+                cart();
+                break;
+            case 5:
+                search();
+            case 6:
+                cout << "\nExiting....\n";
+                _Exit(10);
+                break;
+            default:
+                "\nWrong Choice\n";
+            }
+            cout << "\nWant to retry(Y/y): ";
+            cin >> ch;
     } while (ch == 'y' || ch == 'Y');
-}
-
-void employee()
-{
-    cout << "Employee\n";
 }
 
 void DelhiMap()
@@ -946,12 +948,6 @@ void initiate_code()
     Pbook[9].quantity = 2;
     Pbook[10].quantity = 3;
 
-
-    // for(int i = 0;i<Ebook.size();i++)
-    // {
-    //     library[Ebook[i].id] = Ebook[i];
-    // }
-
     for(int i = 0;i<Pbook.size();i++)
     {
         library[Pbook[i].id] = Pbook[i];
@@ -969,7 +965,7 @@ int main()
     do
     {
         cout << "Log in \n";
-        cout << "User --> 1    Employee --> 2    Exit --> 3\n";
+        cout << "User --> 1    Exit --> 3\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;
@@ -980,10 +976,6 @@ int main()
             break;
 
         case 2:
-            employee();
-            break;
-
-        case 3:
             cout << "\nExiting....\n";
             _Exit(10);
             break;
