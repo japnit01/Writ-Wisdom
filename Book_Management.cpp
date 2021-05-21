@@ -416,7 +416,7 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
 
     cout<<"Avail Discount Coupons: ";
     string coupon;
-    //cin>>coupon;
+    
     cout<<"\n";
     cout<<"\n1. UPI(Patym/Phonepe/Gpay)\n";
     cout<<"2. Credit Card\n";
@@ -435,7 +435,7 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
 
     if(p!=0)
     {
-        string source = "Keshav Puram";
+        string source = "Warehouse";
         string destination;
         cout<<"\nEnter the place for collecting the order : ";
         cin>>destination;
@@ -863,11 +863,11 @@ void initiate_code()
     DelhiMap();
 
     placesTonodes = {
-        {"a",1},{"b",2},{"c",3},{"d",4},{"e",5},{"f",6},{"g",7},{"h",8},{"i",9},{"j",10}
+        {"Warehouse",0},{"a",1},{"b",2},{"c",3},{"d",4},{"e",5},{"f",6},{"g",7},{"h",8},{"i",9}
     };
 
     nodesToplaces = {
-        {1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"},{10,"j"}
+        {0,"Warehouse"},{1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"}
     };
 
     info(1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
