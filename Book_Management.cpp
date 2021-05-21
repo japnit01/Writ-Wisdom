@@ -99,7 +99,7 @@ vector<book> Ebook;
 vector<book> Pbook;
 
 map<char, string> codes;
-string compressed = "";
+string compressed = "",dectext = "";;
 
 struct minheapnode
 {
@@ -209,15 +209,13 @@ void calcfreq(string text)
     huffman(freq);
 }
 
-string dectext = "";
-
 void decodetext(string text,minheapnode *root)
 {   
     minheapnode *temp = root;
     //cout<<text.size()<<"\n";
-    for(long long i=0;i<text.size();i++)
+    for(int i=0;i<text.size();i++)
     {
-        //cout<<i<<" ";
+        cout<<i<<" ";
         root = temp;
         while(root->l == '#' && i<text.size())
         {
@@ -233,7 +231,7 @@ void decodetext(string text,minheapnode *root)
             }
         }
         dectext+=root->l;
-        //cout<<dectext<<"\n";
+        cout<<dectext<<"\n";
         i--;
     }
 }
@@ -268,7 +266,6 @@ void decodetree(string text,int n,minheapnode* reroot)
        dectreec++;
        decodetree(text,n,reroot->right); 
     }    
-    return;
 }
 
 void decodehuffman(string text)
@@ -284,22 +281,21 @@ void decodehuffman(string text)
     
     decodetree(text.substr(32,n),n,reroot);
     codestable(reroot,"");
-    
+    cout<<"here\n";
     minheapnode *temp = reroot;
     int textsize = text.size()-32-n;
     decodetext(text.substr(32+n,text.size()-32-n),reroot);
-    //cout<<"hereto\n";
+    cout<<"hereto\n";
 }
 
 void download(vector<string> eb,int e)
 {   
     for(int i=0;i<e;i++)
     {   
-        cout<<eb[i]<<"\n";
         string inputfile,outputfile;
         
         inputfile = library[eb[i]].filename;
-
+        cout<<inputfile<<"\n";
         ifstream inpfile;
         string s="",temp;
 
@@ -320,6 +316,9 @@ void download(vector<string> eb,int e)
             }
             inpfile.close();
             //cout<<s.size();
+            codes.clear();
+            dectext="";
+            dectreec = 0;
             decodehuffman(s);
             //cout<<dectext<<"\n";
 
@@ -343,7 +342,7 @@ void download(vector<string> eb,int e)
             }
             outpfile.close();
         }
-        codes.clear();
+        
     }
     
 }
@@ -462,7 +461,7 @@ void info(int a,string inputfile,string name, string author, string subject, str
         path = user_path;
     }
     string outputfile;
-
+    compressed = "";
     ifstream inpfile;
     string s = "", temp;
     cout<<inputfile<<"\n";
@@ -869,10 +868,10 @@ void initiate_code()
         {1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"},{10,"j"}
     };
 
-    info(1,"Machine Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
-    info(1,"Computer Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
-    info(1,"Theory of Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
-    info(1,"Discrete Mathematics","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
+    info(1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
+    info(1,"Computer_Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
+    info(1,"Theory_of_Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
+    info(1,"Discrete_Maths","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
     info(1,"EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering","ebook", 100);
     info(1,"NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0);
     info(1,"NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0);
