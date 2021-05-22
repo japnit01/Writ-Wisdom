@@ -539,12 +539,14 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
-bool compare(book a, book b)
+bool compareByName(book a, book b)
 {
-    if(a.name < b.name)
-        return true;
+    return (a.name < b.name);
+}
 
-    return false;
+bool compareByPrice(book a, book b)
+{
+    return (a.price < b.price);
 }
 
 void info(Trienode *root,int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
@@ -621,8 +623,6 @@ void info(Trienode *root,int a,string inputfile,string name, string author, stri
             library[b.id] = b;
             insertkey(root,b.name,b.id);
         }
-
-        sort(Ebook.begin(),Ebook.end(),compare);
 
         outpfile.close();
         codes.clear();
@@ -808,6 +808,35 @@ void orderbook()
     cout << "Books\n";
     int count = 1;
     map<int,string> display;
+
+    string books, filter;
+    vector<book> sortBooks;
+    cout<<"Enter the type of book, 'Physical book or Book PDF'  :  ";
+    cin>>books;
+    cout<<"Enter the criteria for displaying the list of books, 'Name of books or Price of books' :  ";
+    cin>>filter;
+
+    transform(books.begin(),books.end(),books.begin(),::tolower);
+    transform(filter.begin(),filter.end(),filter.begin(),::tolower);
+
+    if(books == "physical book")
+    {
+        sortBooks = Pbook;
+    }
+    else
+    {
+        sortBooks = Ebook;
+    }
+
+    if(filter == "price")
+    {
+        sort(sortBooks.begin(),sortBooks.end(),compareByPrice);
+    }
+    else 
+    {
+        sort(sortBooks.begin(),sortBooks.end(),compareByName);
+    }
+
     for (int i = 0; i < Pbook.size(); i++)
     {
         if (Pbook[i].price != 0)
@@ -1012,8 +1041,6 @@ void initiate_code(Trienode *root)
     Pbook[8].quantity = 1;
     Pbook[9].quantity = 2;
     Pbook[10].quantity = 3;
-
-    sort(Pbook.begin(),Pbook.end(),compare);
 
     for(int i = 0;i<Pbook.size();i++)
     {
