@@ -25,7 +25,7 @@ void insertkey(Trienode *root,string key,string id)
 {
     Trienode *temp = root;
     for(int i=0;i<key.size();i++)
-    {    
+    {   
         int ind = key[i] - 'a';
         if(!temp->children[ind])
         {

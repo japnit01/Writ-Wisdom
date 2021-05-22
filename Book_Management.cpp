@@ -90,6 +90,106 @@ void Graph::printGraph()
     }
 }
 
+struct Trienode
+    {
+        Trienode *children[26];
+        bool eow;
+        string id;
+    };
+
+Trienode *newnode()
+{
+    Trienode *root = new Trienode;
+    root->eow = false;
+
+    for(int i=0;i<26;i++)
+    {
+        root->children[i] = NULL;
+    }
+
+    return root;
+}
+
+void insertkey(Trienode *root,string key,string id)
+{
+    Trienode *temp = root;
+    for(int i=0;i<key.size();i++)
+    {    
+        int ind = key[i] - 'a';
+        if(!temp->children[ind])
+        {
+            temp->children[ind] = newnode();
+        }
+        temp = temp->children[ind];
+    }
+    temp->eow = true;
+    temp->id = id;
+}
+
+bool check(Trienode *root)
+{
+    for(int i=0;i<26;i++)
+    {
+        if(root->children[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void options(Trienode *root,string s)
+{
+    if(root->eow)
+    {
+        cout<<s<<"\n";
+    }    
+
+    if(check(root))
+    {
+        return ;
+    }
+
+    for(int i=0;i<26;i++)
+    {
+        if(root->children[i])
+        {
+            s.push_back(97+i);
+            options(root->children[i],s);
+            s.pop_back();
+        }
+    }
+}
+
+void suggestion(Trienode *root,string s)
+{
+    Trienode *reroot = root;
+
+    for(int i=0;i<s.size();i++)
+    {
+        int ind = s[i] - 'a';
+        if(!reroot->children[ind])
+        {
+            cout<<"No book found\n";
+            return ;
+        }
+        reroot = reroot->children[ind];
+    }
+
+    bool checklast = check(reroot);
+
+    if(checklast && reroot->eow)
+    {
+        cout<<s<<"\n";
+        cout<<"No other book found\n";
+        return;
+    }
+    else{
+        options(reroot,s);
+        return;
+    }
+}
+
 Graph g(10);
 map<string,int> placesTonodes;
 map<int,string> nodesToplaces;
@@ -450,7 +550,7 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
-void info(int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
+void info(Trienode *root,int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
 {   string path;
     if(a ==1)
     {
@@ -522,6 +622,7 @@ void info(int a,string inputfile,string name, string author, string subject, str
             b.filename = outputfile;
             Ebook.push_back(b);
             library[b.id] = b;
+            //insertkey(root,b.name,b.id);
         }
         outpfile.close();
         codes.clear();
@@ -587,7 +688,7 @@ void downloadfile()
     } while (ch == 'y');
 }
 
-void addfile()
+void addfile(Trienode *root)
 {
     cout << "\nAdd Book\n";
     string name, author, subject, tag;
@@ -603,7 +704,7 @@ void addfile()
     string inputfile;
     cout << "Enter the name of file: \n";
     cin >> inputfile;
-    info(0,inputfile,name, author, subject, tag,"ebook",0);
+    info(root,0,inputfile,name, author, subject, tag,"ebook",0);
 }
 
 void cart()
@@ -679,7 +780,7 @@ void cart()
     }while(ch == 'y');
 }
 
-void bookbank()
+void bookbank(Trienode *root)
 {
     cout << "\n\nBook Bank\n";
     cout << "1. Upload Books\n";
@@ -689,7 +790,7 @@ void bookbank()
     cin >> choice1;
     if (choice1 == 1)
     {
-        addfile();
+        addfile(root);
     }
     else if (choice1 == 2)
     {
@@ -791,12 +892,15 @@ void orderbook()
     } while (ch == 'y');
 }
 
-void search()
+void search(Trienode *root)
 {
-
+    string search;
+    cout<<"Search: ";
+    cin>>search;
+    suggestion(root,search);
 }
 
-void customer()
+void customer(Trienode *root)
 {
     char ch = 'y';
     do
@@ -814,7 +918,7 @@ void customer()
         switch (choice1)
         {
             case 1:
-                bookbank();
+                bookbank(root);
                 break;
             case 2:
                 orderbook();
@@ -826,7 +930,7 @@ void customer()
                 cart();
                 break;
             case 5:
-                search();
+                search(root);
             case 6:
                 cout << "\nExiting....\n";
                 _Exit(10);
@@ -858,7 +962,7 @@ void DelhiMap()
     g.addEdge(8,7,2);
 }
 
-void initiate_code()
+void initiate_code(Trienode *root)
 {
     DelhiMap();
 
@@ -870,57 +974,17 @@ void initiate_code()
         {0,"Warehouse"},{1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"}
     };
 
-    info(1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
-    info(1,"Computer_Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
-    info(1,"Theory_of_Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
-    info(1,"Discrete_Maths","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
-    info(1,"EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering","ebook", 100);
-    info(1,"NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0);
-    info(1,"NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0);
-    info(1,"NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0);
-    info(1,"NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0);
-    info(1,"NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0);
-    info(1,"NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0);
-        
-
-    // Ebook[0].filename = "Machine Learning";
-    // Ebook[1].filename = "Computer Graphics";
-    // Ebook[2].filename = "Theory of Computation";
-    // Ebook[3].filename = "Discrete Mathematics";
-    // Ebook[4].filename = "EVS";                 
-    // Ebook[5].filename = "NCERT chemistry class 11";
-    // Ebook[6].filename = "NCERT physics class 11";
-    // Ebook[7].filename = "NCERT mathematics class 11";
-    // Ebook[8].filename = "NCERT chemistry class 12";
-    // Ebook[9].filename = "NCERT physics class 12";
-    // Ebook[10].filename = "NCERT mathematics class 11";
-
-    //     DIR *dir; struct dirent *diread;
-    // vector<string> files;
-
-    // if ((dir = opendir("files")) != nullptr)
-    // {   int count = 0;
-    //     while ((diread = readdir(dir)) != nullptr) 
-    //     {   
-    //         if(count>=2)
-    //         {
-    //             files.push_back(diread->d_name);
-    //         }
-    //         count++;
-            
-    //     }
-    //     closedir (dir);
-    // } 
-    // else {
-    //     perror ("opendir");
-    //     return;
-    // }
-    // cout<<"here"
-
-    // for (int i = 0;i<files.size();i++) 
-    //     cout << files[i] << "\n";
-
-
+    info(root,1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
+    info(root,1,"Computer_Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
+    info(root,1,"Theory_of_Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
+    info(root,1,"Discrete_Maths","Discrete Mathematics and its Applications, 7th Edition", "Kenneth H. Rossen", "Discrete Mathematics", "Engineering", "ebook",300);
+    info(root,1,"EVS","Perspectives in Environmental Studies", "Anubha Kaushik - C.P. Kaushik", "Environmental Science", "Engineering","ebook", 100);
+    info(root,1,"NCERT_chemistry_11","NCERT chemistry class 11","NCERT","Chemistry","11th","ebook",0);
+    info(root,1,"NCERT_physics_11","NCERT physics class 11","NCERT","Physics","11th","ebook",0);
+    info(root,1,"NCERT_mathematics_11","NCERT mathematics class 11","NCERT","Mathematics","11th","ebook",0);
+    info(root,1,"NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0);
+    info(root,1,"NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0);
+    info(root,1,"NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0);
 
     Pbook = {
         book("Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
@@ -948,20 +1012,26 @@ void initiate_code()
     Pbook[9].quantity = 2;
     Pbook[10].quantity = 3;
 
+    
+    // for(int i = 0;i<Ebook.size();i++)
+    // {
+    //     insertkey(root,Ebook[i].name,Ebook[i].id);
+    // }
+
     for(int i = 0;i<Pbook.size();i++)
     {
         library[Pbook[i].id] = Pbook[i];
+        insertkey(root,Pbook[i].name,Pbook[i].id);
     }
 }
 
 int main()
 {
-    initiate_code();
+    Trienode *root = newnode();
+    initiate_code(root);
     //cout << Ebook.size();
     cout << "\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
-    
     char ch = 'y';
-
     do
     {
         cout << "Log in \n";
@@ -972,7 +1042,7 @@ int main()
         switch (choice1)
         {
         case 1:
-            customer();
+            customer(root);
             break;
 
         case 2:
@@ -983,7 +1053,6 @@ int main()
         default:
             "\nWrong Choice\n";
         }
-
         cout << "\nWant to Login Again(Y/y): ";
         cin >> ch;
     } while (ch == 'y' || ch == 'Y');
