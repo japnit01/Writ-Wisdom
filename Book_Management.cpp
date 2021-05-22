@@ -7,6 +7,7 @@
 #include <queue>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 #include <dirent.h>
 using namespace std;
 
@@ -550,6 +551,14 @@ bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
     return true;
 }
 
+bool compare(book a, book b)
+{
+    if(a.name < b.name)
+        return true;
+
+    return false;
+}
+
 void info(Trienode *root,int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
 {   string path;
     if(a ==1)
@@ -624,6 +633,9 @@ void info(Trienode *root,int a,string inputfile,string name, string author, stri
             library[b.id] = b;
             //insertkey(root,b.name,b.id);
         }
+
+        sort(Ebook.begin(),Ebook.end(),compare);
+
         outpfile.close();
         codes.clear();
     }
@@ -1012,11 +1024,7 @@ void initiate_code(Trienode *root)
     Pbook[9].quantity = 2;
     Pbook[10].quantity = 3;
 
-    
-    // for(int i = 0;i<Ebook.size();i++)
-    // {
-    //     insertkey(root,Ebook[i].name,Ebook[i].id);
-    // }
+    sort(Pbook.begin(),Pbook.end(),compare);
 
     for(int i = 0;i<Pbook.size();i++)
     {
