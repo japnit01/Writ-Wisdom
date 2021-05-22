@@ -516,7 +516,7 @@ bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
         cin>>coupon;
         if(coupon == "SAVE20")
         {
-            sum*=0.2;        
+            sum*=0.8;        
         }
         else if(coupon == "SAVE50")
         {
@@ -524,7 +524,7 @@ bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
         }
         else if(coupon == "BMSBEG")
         {
-            sum*=0.4;
+            sum*=0.6;
         }
         cout<<"\nTotal: "<<sum<<"\n";
         cout<<"GST(18%): " <<sum*0.18<<"\n";
@@ -538,7 +538,7 @@ bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
         cout<<"\nEnter the place for collecting the order : ";
         cin>>destination;
     }
-    
+
     int op;
     cout<<"\n1. UPI(Patym/Phonepe/Gpay)\n";
     cout<<"2. Credit Card\n";
