@@ -91,32 +91,29 @@ void Graph::printGraph()
     }
 }
 
-struct Trienode
-    {
-        Trienode *children[26];
+struct Trienode{
+        Trienode *children[255];
         bool eow;
         string id;
     };
 
-Trienode *newnode()
-{
+Trienode *newnode(){
     Trienode *root = new Trienode;
     root->eow = false;
-
-    for(int i=0;i<26;i++)
+    root->id = "PBEB";
+    for(int i=0;i<255;i++)
     {
         root->children[i] = NULL;
     }
-
     return root;
 }
 
-void insertkey(Trienode *root,string key,string id)
-{
+void insertkey(Trienode *root,string key,string endkey){
     Trienode *temp = root;
+    cout<<key<<"\n";
     for(int i=0;i<key.size();i++)
     {    
-        int ind = key[i] - 'a';
+        int ind = key[i] - '\0';
         if(!temp->children[ind])
         {
             temp->children[ind] = newnode();
@@ -124,12 +121,12 @@ void insertkey(Trienode *root,string key,string id)
         temp = temp->children[ind];
     }
     temp->eow = true;
-    temp->id = id;
+    temp->id = endkey;
 }
 
 bool check(Trienode *root)
 {
-    for(int i=0;i<26;i++)
+    for(int i=0;i<255;i++)
     {
         if(root->children[i])
         {
@@ -151,11 +148,11 @@ void options(Trienode *root,string s)
         return ;
     }
 
-    for(int i=0;i<26;i++)
+    for(int i=0;i<255;i++)
     {
         if(root->children[i])
         {
-            s.push_back(97+i);
+            s.push_back(0+i);
             options(root->children[i],s);
             s.pop_back();
         }
@@ -165,10 +162,10 @@ void options(Trienode *root,string s)
 void suggestion(Trienode *root,string s)
 {
     Trienode *reroot = root;
-
     for(int i=0;i<s.size();i++)
-    {
-        int ind = s[i] - 'a';
+    {  
+        int ind = s[i] - '\0';
+        //cout<<ind<<"\n";
         if(!reroot->children[ind])
         {
             cout<<"No book found\n";
@@ -176,7 +173,6 @@ void suggestion(Trienode *root,string s)
         }
         reroot = reroot->children[ind];
     }
-
     bool checklast = check(reroot);
 
     if(checklast && reroot->eow)
@@ -239,7 +235,7 @@ void codestable(minheapnode *root, string str)
 
     if (root->l != '#')
     {
-        cout<<root->l<<": "<<str<<"\n";
+        //cout<<root->l<<": "<<str<<"\n";
         codes[root->l] = str;
     }
 
@@ -305,7 +301,6 @@ void calcfreq(string text)
     {
         freq[text[i]]++;
     }
-    
     cout<<"\n";
     huffman(freq);
 }
@@ -316,7 +311,7 @@ void decodetext(string text,minheapnode *root)
     //cout<<text.size()<<"\n";
     for(int i=0;i<text.size();i++)
     {
-        cout<<i<<" ";
+        //cout<<i<<" ";
         root = temp;
         while(root->l == '#' && i<text.size())
         {
@@ -332,7 +327,7 @@ void decodetext(string text,minheapnode *root)
             }
         }
         dectext+=root->l;
-        cout<<dectext<<"\n";
+        //cout<<dectext<<"\n";
         i--;
     }
 }
@@ -373,20 +368,13 @@ void decodehuffman(string text)
 {   
     minheapnode *reroot;
     reroot = new minheapnode('#',-1);
-    
     int n = stoi(text.substr(0,32),0,2);
-    //cout<<n<<""<<text.substr(0,32)<<"\n";
-    //cout<<text.size()<<"\n";
-    //text = text.substr(32,text.size()-32);
-    //cout<<text.size()<<"\n";
-    
+
     decodetree(text.substr(32,n),n,reroot);
     codestable(reroot,"");
-    cout<<"here\n";
     minheapnode *temp = reroot;
     int textsize = text.size()-32-n;
     decodetext(text.substr(32+n,text.size()-32-n),reroot);
-    cout<<"hereto\n";
 }
 
 void download(vector<string> eb,int e)
@@ -396,7 +384,7 @@ void download(vector<string> eb,int e)
         string inputfile,outputfile;
         
         inputfile = library[eb[i]].filename;
-        cout<<inputfile<<"\n";
+        //cout<<inputfile<<"\n";
         ifstream inpfile;
         string s="",temp;
 
@@ -631,7 +619,7 @@ void info(Trienode *root,int a,string inputfile,string name, string author, stri
             b.filename = outputfile;
             Ebook.push_back(b);
             library[b.id] = b;
-            //insertkey(root,b.name,b.id);
+            insertkey(root,b.name,b.id);
         }
 
         sort(Ebook.begin(),Ebook.end(),compare);
@@ -943,6 +931,7 @@ void customer(Trienode *root)
                 break;
             case 5:
                 search(root);
+                break;
             case 6:
                 cout << "\nExiting....\n";
                 _Exit(10);
@@ -1043,7 +1032,7 @@ int main()
     do
     {
         cout << "Log in \n";
-        cout << "User --> 1    Exit --> 3\n";
+        cout << "User --> 1    Exit --> 2\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;

@@ -65,7 +65,7 @@ void options(Trienode *root,string s)
     {
         if(root->children[i])
         {
-            s.push_back(97+i);
+            s.push_back(0+i);
             options(root->children[i],s);
             s.pop_back();
         }
