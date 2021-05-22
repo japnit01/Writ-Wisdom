@@ -28,7 +28,7 @@ class book{
 
     book()
     {
-        cout<<"Default Constructor\n";
+        //cout<<"Default Constructor\n";
     }
 
     book(string n, string a, string s, string t, string tp, int p)
@@ -97,6 +97,20 @@ struct Trienode{
         string id;
     };
 
+Graph g(10);
+map<string,int> placesTonodes;
+map<int,string> nodesToplaces;
+map<string,book> library;
+map<string,int> Cart;
+vector<book> Ebook;
+vector<book> Pbook;
+vector<string> searchresults;
+vector<string> disc = {"SAVE20","SAVE50","BMSBEG"};
+
+map<char, string> codes;
+string compressed = "",dectext = "";;
+
+
 Trienode *newnode(){
     Trienode *root = new Trienode;
     root->eow = false;
@@ -110,7 +124,7 @@ Trienode *newnode(){
 
 void insertkey(Trienode *root,string key,string endkey){
     Trienode *temp = root;
-    cout<<key<<"\n";
+    //cout<<key<<"\n";
     for(int i=0;i<key.size();i++)
     {    
         int ind = key[i] - '\0';
@@ -141,6 +155,7 @@ void options(Trienode *root,string s)
     if(root->eow)
     {
         cout<<s<<"\n";
+        searchresults.push_back(root->id);
     }    
 
     if(check(root))
@@ -165,7 +180,6 @@ void suggestion(Trienode *root,string s)
     for(int i=0;i<s.size();i++)
     {  
         int ind = s[i] - '\0';
-        //cout<<ind<<"\n";
         if(!reroot->children[ind])
         {
             cout<<"No book found\n";
@@ -178,6 +192,7 @@ void suggestion(Trienode *root,string s)
     if(checklast && reroot->eow)
     {
         cout<<s<<"\n";
+        searchresults.push_back(reroot->id);
         cout<<"No other book found\n";
         return;
     }
@@ -186,17 +201,6 @@ void suggestion(Trienode *root,string s)
         return;
     }
 }
-
-Graph g(10);
-map<string,int> placesTonodes;
-map<int,string> nodesToplaces;
-map<string,book> library;
-map<string,int> Cart;
-vector<book> Ebook;
-vector<book> Pbook;
-
-map<char, string> codes;
-string compressed = "",dectext = "";;
 
 struct minheapnode
 {
@@ -427,7 +431,7 @@ void download(vector<string> eb,int e)
             {
                 //cout<<dectext.size()<<"\n";
                 outpfile<<dectext<<endl;
-                cout<<"File downloaded\n";
+                cout<<inputfile<<" downloaded\n";
             }
             outpfile.close();
         }
@@ -495,47 +499,87 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 
 }
 
-bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
+bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
     codes.clear();
     cout<<"Order Summary\n";
     cout<<"Item Ordered: "<<p+e<<"\n";
     cout<<"Ebook: "<<e<<"\n";
     cout<<"Printed Book: "<<p<<"\n";
-    cout<<"Total: "<<sum<<"\n";
+    cout<<"Total Price: "<<sum<<"\n";
+    cout<<"GST(18%): " <<sum*0.18<<"\n";
+    cout<<"Total Amount: "<<sum + sum*0.18<<"\n";
 
-    cout<<"Avail Discount Coupons: ";
-    string coupon;
+    if(sum != 0)  
+    {
+        cout<<"Avail Discount Coupons: ";
+        string coupon;
+        cin>>coupon;
+        if(coupon == "SAVE20")
+        {
+            sum*=0.2;        
+        }
+        else if(coupon == "SAVE50")
+        {
+            sum*=0.5;
+        }
+        else if(coupon == "BMSBEG")
+        {
+            sum*=0.4;
+        }
+        cout<<"\nTotal: "<<sum<<"\n";
+        cout<<"GST(18%): " <<sum*0.18<<"\n";
+        cout<<"Total Amount: "<<sum + sum*0.18<<"\n";   
+    }
+
+    string source = "Warehouse";
+    string destination;
+    if(p!=0)
+    {   
+        cout<<"\nEnter the place for collecting the order : ";
+        cin>>destination;
+    }
     
-    cout<<"\n";
+    int op;
     cout<<"\n1. UPI(Patym/Phonepe/Gpay)\n";
     cout<<"2. Credit Card\n";
     cout<<"3. Debit Card\n";
+    cout<<"Enter Choice: ";
+    cin>>op;
     
-    int amount;
-    cout<<"Enter Amount: ";
-    cin>>amount;
-    if(amount == sum)
+    if(op == 1)
     {
-        cout<<"Payment Succesfull!!!\n";
+        string add;
+        cout<<"\nEnter UPI Address: ";
+        cin>>add;
+    }
+    else if(op == 2 || op == 3)
+    {   string cardno,cvv,cardh;
+        int expm,expy;
+        cout<<"\nName of Card Holder: ";
+        cin>>cardh;
+        cout<<"\nCredit Card No.: ";
+        cin>>cardno;
+        cout<<"\nExpiry Month: ";
+        cin>>expm;
+        cout<<"\nExpiry Year: ";
+        cin>>expy;
+        cout<<"\nCVV: ";
+        cin>>cvv;
     }
     else{
+        cout<<"Transaction Failed!!!\n";
         return false;
     }
-
+        cout<<"Transaction Succesfull!!!\n";
+    
     if(p!=0)
     {
-        string source = "Warehouse";
-        string destination;
-        cout<<"\nEnter the place for collecting the order : ";
-        cin>>destination;
         deliver(g.adj,g.V,source,destination);
     }
     if(e!=0)
     {
         download(eb,e);
     }
-    
-    
     return true;
 }
 
@@ -698,7 +742,7 @@ void addfile(Trienode *root)
     cin >> author;
     cout << "Subject: \n";
     cin >> subject;
-    cout << "Tag (Class/Engineering/Medical): \n";
+    cout << "Tag (Class/Engineering/Fiction/Mystery): \n";
     cin >> tag;
 
     string inputfile;
@@ -712,7 +756,8 @@ void cart()
     vector<string> pb;
     vector<string> eb;
     cout << "\nCart\n";
-    int sum = 0,p = 0,e = 0;
+    float sum = 0;
+    int p = 0,e = 0;
     for(auto it = Cart.begin();it != Cart.end();it++)
     {       string id = it->first;
             cout<<"ID: "<<id<<"\n";
@@ -796,11 +841,6 @@ void bookbank(Trienode *root)
     {
         downloadfile();
     }
-}
-
-void orderstatus()
-{
-    cout << "\nOrder Status\n";
 }
 
 void orderbook()
@@ -894,10 +934,80 @@ void orderbook()
 
 void search(Trienode *root)
 {
+    searchresults.clear();
     string search;
     cout<<"Search: ";
     cin>>search;
     suggestion(root,search);
+
+    cout<<"\nSearch Results\n";
+    int count = 1;
+    map<int,string> display;
+    for (int i = 0; i < searchresults.size(); i++)
+    {
+        string id = searchresults[i];
+            cout << "\n";
+            cout << library[id].subject << "\n";
+            cout << "Name: " << library[id].name << "\n";
+            cout << library[id].tag << "\nAuthor: " << library[id].author << "\n";
+            cout << "Price: " << library[id].price << "\n";
+            if(id.substr(0,2) == "PB")
+                cout<<"In Stock: "<<library[id].quantity<<"\n";
+            cout << "\nAdd to Cart --> " << count << "\n";
+            cout << "-----------------------------";
+            display[count] = library[id].id;
+            count++;
+    }
+
+    int c;
+    cout << "\n Exit --> " << count;
+    int exit = count;
+    char ch = 'y';
+
+    do
+    {
+        cout << "\nEnter Choice: ";
+        cin >> c;
+        if (c <= exit)
+        {
+            if (c == exit)
+            {
+                return ;
+            }
+            else
+            {   string id = display[c];
+
+                if(id.substr(0,2) == "EB")
+                {
+                    if(Cart[id] == 0)
+                    {
+                        Cart[id]++;
+                    }
+                    else
+                    {
+                        cout<<"\nOnly one can be added";
+                    }
+                }
+                else if(id.substr(0,2) == "PB")
+                {
+
+                    if(Cart[id] < library[id].quantity)
+                    {
+                        Cart[id]++;
+                    }
+                    else
+                    {
+                        cout<<"\nNo more in stock";
+                    }
+                }
+            }
+        }
+        else
+        {
+            cout << "\nPlease input correct choice";
+        }
+
+    } while (ch == 'y');
 }
 
 void customer(Trienode *root)
@@ -905,13 +1015,11 @@ void customer(Trienode *root)
     char ch = 'y';
     do
     {
-        cout << "\n\n\nCustomer\n";
         cout << "1. Book bank\n";
         cout << "2. Order Books\n";
-        cout << "3. Order Status\n";
-        cout << "4. Cart\n";
-        cout << "5. Search\n";
-        cout << "6. Exit\n";
+        cout << "3. Cart\n";
+        cout << "4. Search\n";
+        cout << "5. Exit\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;
@@ -924,15 +1032,12 @@ void customer(Trienode *root)
                 orderbook();
                 break;
             case 3:
-                orderstatus();
-                break;
-            case 4:
                 cart();
                 break;
-            case 5:
+            case 4:
                 search(root);
                 break;
-            case 6:
+            case 5:
                 cout << "\nExiting....\n";
                 _Exit(10);
                 break;
@@ -1026,33 +1131,11 @@ int main()
 {
     Trienode *root = newnode();
     initiate_code(root);
-    //cout << Ebook.size();
-    cout << "\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
-    char ch = 'y';
-    do
-    {
-        cout << "Log in \n";
-        cout << "User --> 1    Exit --> 2\n";
-        cout << "Enter Choice: ";
-        int choice1;
-        cin >> choice1;
-        switch (choice1)
-        {
-        case 1:
-            customer(root);
-            break;
 
-        case 2:
+    cout << "\nBOOK MANAGEMENT SYSTEM\n";
+    
+            customer(root);
             cout << "\nExiting....\n";
             _Exit(10);
-            break;
-
-        default:
-            "\nWrong Choice\n";
-        }
-        cout << "\nWant to Login Again(Y/y): ";
-        cin >> ch;
-    } while (ch == 'y' || ch == 'Y');
-    cout << "\nExiting.....\n";
     return 0;
 }
