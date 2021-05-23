@@ -13,7 +13,7 @@ using namespace std;
 
 int E_count = 0,P_count = 0;
 string user_path = "user_files/",decompress_path = "decompressed_files/",initiate_path = "files/";
-string location;
+
 class book{
     public:
     string id;
@@ -26,11 +26,7 @@ class book{
     string type;
     string filename;
 
-    book()
-    {
-        //cout<<"Default Constructor\n";
-    }
-
+    book(){}
     book(string n, string a, string s, string t, string tp, int p)
     {
         if(tp == "ebook")
@@ -52,8 +48,7 @@ class book{
     }
 };
 
-class Graph 
-{
+class Graph {
     public:
 
     int V;
@@ -97,7 +92,7 @@ struct Trienode{
         string id;
     };
 
-Graph g(10);
+Graph g(56);
 map<string,int> placesTonodes;
 map<int,string> nodesToplaces;
 map<string,book> library;
@@ -443,8 +438,10 @@ void download(vector<string> eb,int e)
 // Using Dijkstra's Algorithm
 void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 {
+    cout<<src<<" "<<dest<<"\n";
     int source = placesTonodes[src];
     int destination = placesTonodes[dest];
+    cout<<placesTonodes[src]<<" "<<placesTonodes[dest]<<"\n";
     vector<int> connected(V);
     stack<int> s;
     priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; // min heap
@@ -531,12 +528,14 @@ bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
         cout<<"Total Amount: "<<sum + sum*0.18<<"\n";   
     }
 
-    string source = "Warehouse";
+    string source = "murthal";
     string destination;
     if(p!=0)
     {   
         cout<<"\nEnter the place for collecting the order : ";
-        cin>>destination;
+        getline(cin>>ws,destination);
+        cout<<destination;
+        cout<<placesTonodes[destination]<<"\n";
     }
 
     int op;
@@ -706,8 +705,7 @@ void downloadfile()
         cin >> c;
         if (c <= exit)
         {
-            if (c == exit)
-            {
+            if (c == exit)            {
                 return ;
             }
             else
@@ -1051,21 +1049,83 @@ void customer(Trienode *root)
 
 void DelhiMap()
 {
-    g.addEdge(0,3,4);
-    g.addEdge(1,2,2);
-    g.addEdge(2,3,7);
-    g.addEdge(3,4,3);
-    g.addEdge(4,1,5);
-    g.addEdge(1,0,1);
-    g.addEdge(3,5,9);
-    g.addEdge(1,5,6);
-    g.addEdge(6,5,3);
-    g.addEdge(1,9,12);
-    g.addEdge(6,9,6);
-    g.addEdge(0,7,8);
-    g.addEdge(7,9,20);
-    g.addEdge(2,8,8);
-    g.addEdge(8,7,2);
+    g.addEdge(0,1,43);
+    g.addEdge(0,5,42);
+    g.addEdge(1,5,2);
+    g.addEdge(1,6,2);
+    g.addEdge(6,7,3);
+    g.addEdge(7,8,3);
+    g.addEdge(5,11,9.5);
+    g.addEdge(5,10,11);
+    g.addEdge(10,11,6);
+    g.addEdge(8,9,2);
+    g.addEdge(9,10,3);
+    g.addEdge(11,16,4);
+    g.addEdge(14,16,4);
+    g.addEdge(13,14,4.5);
+    g.addEdge(10,14,4);
+    g.addEdge(10,13,4);
+    g.addEdge(9,13,4);
+    g.addEdge(12,13,5);
+    g.addEdge(8,12,2);
+    g.addEdge(14,15,10);
+    g.addEdge(15,20,12);
+    g.addEdge(12,20,5);
+    g.addEdge(16,17,5);
+    g.addEdge(17,19,6);
+    g.addEdge(18,19,4.5);
+    g.addEdge(15,18,5);
+    g.addEdge(7,22,6);
+    g.addEdge(22,23,4);
+    g.addEdge(23,24,3);
+    g.addEdge(20,24,2);
+    g.addEdge(21,22,16);
+    g.addEdge(24,25,3.5);
+    g.addEdge(25,26,4.5);
+    g.addEdge(23,26,4.5);
+    g.addEdge(26,27,5.5);
+    g.addEdge(27,28,7);
+    g.addEdge(28,29,8);
+    g.addEdge(53,54,7.5);
+    g.addEdge(27,54,12);
+    g.addEdge(26,53,8.5);
+    g.addEdge(51,54,16);
+    g.addEdge(47,51,1.5);
+    g.addEdge(46,47,7);
+    g.addEdge(44,45,22);
+    g.addEdge(44,46,2);
+    g.addEdge(47,48,2.5);
+    g.addEdge(48,49,3);
+    g.addEdge(48,50,22);
+    g.addEdge(43,46,3);
+    g.addEdge(43,44,2.5);
+    g.addEdge(40,43,11);
+    g.addEdge(38,40,7);
+    g.addEdge(38,39,12);
+    g.addEdge(37,38,6);
+    g.addEdge(35,37,2);
+    g.addEdge(34,35,3);
+    g.addEdge(33,34,3.5);
+    g.addEdge(36,37,4);
+    g.addEdge(34,36,6);
+    g.addEdge(15,30,6);
+    g.addEdge(20,30,8.5);
+    g.addEdge(25,30,8);
+    g.addEdge(30,37,2.5);
+    g.addEdge(30,43,12);
+    g.addEdge(32,33,1.5);
+    g.addEdge(30,32,1);
+    g.addEdge(30,31,1.5);
+    g.addEdge(15,31,4);
+    g.addEdge(31,53,10);
+    g.addEdge(52,53,8);
+    g.addEdge(52,43,3.5);
+    g.addEdge(47,52,3);
+    g.addEdge(30,52,8);
+    g.addEdge(43,55,12);
+    g.addEdge(42,55,11);
+    g.addEdge(40,55,11);
+    g.addEdge(44,55,12);
 }
 
 void initiate_code(Trienode *root)
@@ -1073,12 +1133,24 @@ void initiate_code(Trienode *root)
     DelhiMap();
 
     placesTonodes = {
-        {"Warehouse",0},{"a",1},{"b",2},{"c",3},{"d",4},{"e",5},{"f",6},{"g",7},{"h",8},{"i",9}
-    };
+    {"murthal",0},{"dtu entrance",1},{"dtu sports ground",2},{"dtu library",3},{"dtu oat",4},
+    {"samaypur badli",5},{"rithala",6},{"pitampura",7},{"netaji subhash place",8},{"shalimar bagh",9},
+    {"azadpur",10},{"jharoda",11},{"keshav puram",12},{"ashok vihar",13},{"gtb nagar",14},
+    {"kashmere gate",15},{"signature bridge",16},{"yamuna vihar",17},{"welcome",18},{"dilshad garden",19},
+    {"inderlok",20},{"bahadurgarh",21},{"peeragarhi",22},{"punjabi bagh",23},{"ashoka park main",24},
+    {"kirti nagar",25},{"rajouri garden",26},{"janakpuri",27},{"dwarka",28},{"najafgarh",29},
+    {"connaught place",30},{"new delhi railway station",31},{"bangla sahib",32},{"parliament",33},{"india gate",34},
+    {"supreme court",35},{"red fort",36},{"mandi house",37},{"yamuna bank",38},{"vaishali",39},
+    {"mayur vihar",40},{"botanical garden",41},{"noida",42},{"lajpat nagar",43},{"nehru place",44},
+    {"faridabad",45},{"greater kailash",46},{"hauz khas",47},{"malviya nagar",48},{"qutub minar",49},
+    {"gurugram",50},{"iit delhi",51},{"ina delhi hatt",52},{"dhaula kuan",53},{"igia",54},{"botanical park",55}};
 
-    nodesToplaces = {
-        {0,"Warehouse"},{1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"}
-    };
+    for(auto it = placesTonodes.begin();it != placesTonodes.end();++it)
+    {
+        nodesToplaces[it->second] = it->first;
+    }
+
+    cout<<placesTonodes["rithala"]<<" "<<nodesToplaces[21];
 
     info(root,1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
     info(root,1,"Computer_Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
