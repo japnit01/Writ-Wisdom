@@ -13,7 +13,7 @@ using namespace std;
 
 int E_count = 0,P_count = 0;
 string user_path = "user_files/",decompress_path = "decompressed_files/",initiate_path = "files/";
-string location;
+
 class book{
     public:
     string id;
@@ -26,11 +26,7 @@ class book{
     string type;
     string filename;
 
-    book()
-    {
-        cout<<"Default Constructor\n";
-    }
-
+    book(){}
     book(string n, string a, string s, string t, string tp, int p)
     {
         if(tp == "ebook")
@@ -52,8 +48,7 @@ class book{
     }
 };
 
-class Graph 
-{
+class Graph {
     public:
 
     int V;
@@ -97,6 +92,20 @@ struct Trienode{
         string id;
     };
 
+Graph g(56);
+map<string,int> placesTonodes;
+map<int,string> nodesToplaces;
+map<string,book> library;
+map<string,int> Cart;
+vector<book> Ebook;
+vector<book> Pbook;
+vector<string> searchresults;
+vector<string> disc = {"SAVE20","SAVE50","BMSBEG"};
+
+map<char, string> codes;
+string compressed = "",dectext = "";;
+
+
 Trienode *newnode(){
     Trienode *root = new Trienode;
     root->eow = false;
@@ -110,7 +119,7 @@ Trienode *newnode(){
 
 void insertkey(Trienode *root,string key,string endkey){
     Trienode *temp = root;
-    cout<<key<<"\n";
+    //cout<<key<<"\n";
     for(int i=0;i<key.size();i++)
     {    
         int ind = key[i] - '\0';
@@ -141,6 +150,7 @@ void options(Trienode *root,string s)
     if(root->eow)
     {
         cout<<s<<"\n";
+        searchresults.push_back(root->id);
     }    
 
     if(check(root))
@@ -165,7 +175,6 @@ void suggestion(Trienode *root,string s)
     for(int i=0;i<s.size();i++)
     {  
         int ind = s[i] - '\0';
-        //cout<<ind<<"\n";
         if(!reroot->children[ind])
         {
             cout<<"No book found\n";
@@ -178,6 +187,7 @@ void suggestion(Trienode *root,string s)
     if(checklast && reroot->eow)
     {
         cout<<s<<"\n";
+        searchresults.push_back(reroot->id);
         cout<<"No other book found\n";
         return;
     }
@@ -186,17 +196,6 @@ void suggestion(Trienode *root,string s)
         return;
     }
 }
-
-Graph g(10);
-map<string,int> placesTonodes;
-map<int,string> nodesToplaces;
-map<string,book> library;
-map<string,int> Cart;
-vector<book> Ebook;
-vector<book> Pbook;
-
-map<char, string> codes;
-string compressed = "",dectext = "";;
 
 struct minheapnode
 {
@@ -427,7 +426,7 @@ void download(vector<string> eb,int e)
             {
                 //cout<<dectext.size()<<"\n";
                 outpfile<<dectext<<endl;
-                cout<<"File downloaded\n";
+                cout<<inputfile<<" downloaded\n";
             }
             outpfile.close();
         }
@@ -439,8 +438,10 @@ void download(vector<string> eb,int e)
 // Using Dijkstra's Algorithm
 void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 {
+    cout<<src<<" "<<dest<<"\n";
     int source = placesTonodes[src];
     int destination = placesTonodes[dest];
+    cout<<placesTonodes[src]<<" "<<placesTonodes[dest]<<"\n";
     vector<int> connected(V);
     stack<int> s;
     priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; // min heap
@@ -495,47 +496,89 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 
 }
 
-bool billing(int p,int e,int sum,vector<string> eb,vector<string> pb){
+bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
     codes.clear();
     cout<<"Order Summary\n";
     cout<<"Item Ordered: "<<p+e<<"\n";
     cout<<"Ebook: "<<e<<"\n";
     cout<<"Printed Book: "<<p<<"\n";
-    cout<<"Total: "<<sum<<"\n";
+    cout<<"Total Price: "<<sum<<"\n";
+    cout<<"GST(18%): " <<sum*0.18<<"\n";
+    cout<<"Total Amount: "<<sum + sum*0.18<<"\n";
 
-    cout<<"Avail Discount Coupons: ";
-    string coupon;
-    
-    cout<<"\n";
+    if(sum != 0)  
+    {
+        cout<<"Avail Discount Coupons: ";
+        string coupon;
+        cin>>coupon;
+        if(coupon == "SAVE20")
+        {
+            sum*=0.8;        
+        }
+        else if(coupon == "SAVE50")
+        {
+            sum*=0.5;
+        }
+        else if(coupon == "BMSBEG")
+        {
+            sum*=0.6;
+        }
+        cout<<"\nTotal: "<<sum<<"\n";
+        cout<<"GST(18%): " <<sum*0.18<<"\n";
+        cout<<"Total Amount: "<<sum + sum*0.18<<"\n";   
+    }
+
+    string source = "murthal";
+    string destination;
+    if(p!=0)
+    {   
+        cout<<"\nEnter the place for collecting the order : ";
+        getline(cin>>ws,destination);
+        cout<<destination;
+        cout<<placesTonodes[destination]<<"\n";
+    }
+
+    int op;
     cout<<"\n1. UPI(Patym/Phonepe/Gpay)\n";
     cout<<"2. Credit Card\n";
     cout<<"3. Debit Card\n";
+    cout<<"Enter Choice: ";
+    cin>>op;
     
-    int amount;
-    cout<<"Enter Amount: ";
-    cin>>amount;
-    if(amount == sum)
+    if(op == 1)
     {
-        cout<<"Payment Succesfull!!!\n";
+        string add;
+        cout<<"\nEnter UPI Address: ";
+        cin>>add;
+    }
+    else if(op == 2 || op == 3)
+    {   string cardno,cvv,cardh;
+        int expm,expy;
+        cout<<"\nName of Card Holder: ";
+        cin>>cardh;
+        cout<<"\nCredit Card No.: ";
+        cin>>cardno;
+        cout<<"\nExpiry Month: ";
+        cin>>expm;
+        cout<<"\nExpiry Year: ";
+        cin>>expy;
+        cout<<"\nCVV: ";
+        cin>>cvv;
     }
     else{
+        cout<<"Transaction Failed!!!\n";
         return false;
     }
-
+        cout<<"Transaction Succesfull!!!\n";
+    
     if(p!=0)
     {
-        string source = "Warehouse";
-        string destination;
-        cout<<"\nEnter the place for collecting the order : ";
-        cin>>destination;
         deliver(g.adj,g.V,source,destination);
     }
     if(e!=0)
     {
         download(eb,e);
     }
-    
-    
     return true;
 }
 
@@ -662,8 +705,7 @@ void downloadfile()
         cin >> c;
         if (c <= exit)
         {
-            if (c == exit)
-            {
+            if (c == exit)            {
                 return ;
             }
             else
@@ -698,7 +740,7 @@ void addfile(Trienode *root)
     cin >> author;
     cout << "Subject: \n";
     cin >> subject;
-    cout << "Tag (Class/Engineering/Medical): \n";
+    cout << "Tag (Class/Engineering/Fiction/Mystery): \n";
     cin >> tag;
 
     string inputfile;
@@ -712,7 +754,8 @@ void cart()
     vector<string> pb;
     vector<string> eb;
     cout << "\nCart\n";
-    int sum = 0,p = 0,e = 0;
+    float sum = 0;
+    int p = 0,e = 0;
     for(auto it = Cart.begin();it != Cart.end();it++)
     {       string id = it->first;
             cout<<"ID: "<<id<<"\n";
@@ -796,11 +839,6 @@ void bookbank(Trienode *root)
     {
         downloadfile();
     }
-}
-
-void orderstatus()
-{
-    cout << "\nOrder Status\n";
 }
 
 void orderbook()
@@ -923,10 +961,80 @@ void orderbook()
 
 void search(Trienode *root)
 {
+    searchresults.clear();
     string search;
     cout<<"Search: ";
     cin>>search;
     suggestion(root,search);
+
+    cout<<"\nSearch Results\n";
+    int count = 1;
+    map<int,string> display;
+    for (int i = 0; i < searchresults.size(); i++)
+    {
+        string id = searchresults[i];
+            cout << "\n";
+            cout << library[id].subject << "\n";
+            cout << "Name: " << library[id].name << "\n";
+            cout << library[id].tag << "\nAuthor: " << library[id].author << "\n";
+            cout << "Price: " << library[id].price << "\n";
+            if(id.substr(0,2) == "PB")
+                cout<<"In Stock: "<<library[id].quantity<<"\n";
+            cout << "\nAdd to Cart --> " << count << "\n";
+            cout << "-----------------------------";
+            display[count] = library[id].id;
+            count++;
+    }
+
+    int c;
+    cout << "\n Exit --> " << count;
+    int exit = count;
+    char ch = 'y';
+
+    do
+    {
+        cout << "\nEnter Choice: ";
+        cin >> c;
+        if (c <= exit)
+        {
+            if (c == exit)
+            {
+                return ;
+            }
+            else
+            {   string id = display[c];
+
+                if(id.substr(0,2) == "EB")
+                {
+                    if(Cart[id] == 0)
+                    {
+                        Cart[id]++;
+                    }
+                    else
+                    {
+                        cout<<"\nOnly one can be added";
+                    }
+                }
+                else if(id.substr(0,2) == "PB")
+                {
+
+                    if(Cart[id] < library[id].quantity)
+                    {
+                        Cart[id]++;
+                    }
+                    else
+                    {
+                        cout<<"\nNo more in stock";
+                    }
+                }
+            }
+        }
+        else
+        {
+            cout << "\nPlease input correct choice";
+        }
+
+    } while (ch == 'y');
 }
 
 void customer(Trienode *root)
@@ -934,13 +1042,11 @@ void customer(Trienode *root)
     char ch = 'y';
     do
     {
-        cout << "\n\n\nCustomer\n";
         cout << "1. Book bank\n";
         cout << "2. Order Books\n";
-        cout << "3. Order Status\n";
-        cout << "4. Cart\n";
-        cout << "5. Search\n";
-        cout << "6. Exit\n";
+        cout << "3. Cart\n";
+        cout << "4. Search\n";
+        cout << "5. Exit\n";
         cout << "Enter Choice: ";
         int choice1;
         cin >> choice1;
@@ -953,15 +1059,12 @@ void customer(Trienode *root)
                 orderbook();
                 break;
             case 3:
-                orderstatus();
-                break;
-            case 4:
                 cart();
                 break;
-            case 5:
+            case 4:
                 search(root);
                 break;
-            case 6:
+            case 5:
                 cout << "\nExiting....\n";
                 _Exit(10);
                 break;
@@ -975,21 +1078,83 @@ void customer(Trienode *root)
 
 void DelhiMap()
 {
-    g.addEdge(0,3,4);
-    g.addEdge(1,2,2);
-    g.addEdge(2,3,7);
-    g.addEdge(3,4,3);
-    g.addEdge(4,1,5);
-    g.addEdge(1,0,1);
-    g.addEdge(3,5,9);
-    g.addEdge(1,5,6);
-    g.addEdge(6,5,3);
-    g.addEdge(1,9,12);
-    g.addEdge(6,9,6);
-    g.addEdge(0,7,8);
-    g.addEdge(7,9,20);
-    g.addEdge(2,8,8);
-    g.addEdge(8,7,2);
+    g.addEdge(0,1,43);
+    g.addEdge(0,5,42);
+    g.addEdge(1,5,2);
+    g.addEdge(1,6,2);
+    g.addEdge(6,7,3);
+    g.addEdge(7,8,3);
+    g.addEdge(5,11,9.5);
+    g.addEdge(5,10,11);
+    g.addEdge(10,11,6);
+    g.addEdge(8,9,2);
+    g.addEdge(9,10,3);
+    g.addEdge(11,16,4);
+    g.addEdge(14,16,4);
+    g.addEdge(13,14,4.5);
+    g.addEdge(10,14,4);
+    g.addEdge(10,13,4);
+    g.addEdge(9,13,4);
+    g.addEdge(12,13,5);
+    g.addEdge(8,12,2);
+    g.addEdge(14,15,10);
+    g.addEdge(15,20,12);
+    g.addEdge(12,20,5);
+    g.addEdge(16,17,5);
+    g.addEdge(17,19,6);
+    g.addEdge(18,19,4.5);
+    g.addEdge(15,18,5);
+    g.addEdge(7,22,6);
+    g.addEdge(22,23,4);
+    g.addEdge(23,24,3);
+    g.addEdge(20,24,2);
+    g.addEdge(21,22,16);
+    g.addEdge(24,25,3.5);
+    g.addEdge(25,26,4.5);
+    g.addEdge(23,26,4.5);
+    g.addEdge(26,27,5.5);
+    g.addEdge(27,28,7);
+    g.addEdge(28,29,8);
+    g.addEdge(53,54,7.5);
+    g.addEdge(27,54,12);
+    g.addEdge(26,53,8.5);
+    g.addEdge(51,54,16);
+    g.addEdge(47,51,1.5);
+    g.addEdge(46,47,7);
+    g.addEdge(44,45,22);
+    g.addEdge(44,46,2);
+    g.addEdge(47,48,2.5);
+    g.addEdge(48,49,3);
+    g.addEdge(48,50,22);
+    g.addEdge(43,46,3);
+    g.addEdge(43,44,2.5);
+    g.addEdge(40,43,11);
+    g.addEdge(38,40,7);
+    g.addEdge(38,39,12);
+    g.addEdge(37,38,6);
+    g.addEdge(35,37,2);
+    g.addEdge(34,35,3);
+    g.addEdge(33,34,3.5);
+    g.addEdge(36,37,4);
+    g.addEdge(34,36,6);
+    g.addEdge(15,30,6);
+    g.addEdge(20,30,8.5);
+    g.addEdge(25,30,8);
+    g.addEdge(30,37,2.5);
+    g.addEdge(30,43,12);
+    g.addEdge(32,33,1.5);
+    g.addEdge(30,32,1);
+    g.addEdge(30,31,1.5);
+    g.addEdge(15,31,4);
+    g.addEdge(31,53,10);
+    g.addEdge(52,53,8);
+    g.addEdge(52,43,3.5);
+    g.addEdge(47,52,3);
+    g.addEdge(30,52,8);
+    g.addEdge(43,55,12);
+    g.addEdge(42,55,11);
+    g.addEdge(40,55,11);
+    g.addEdge(44,55,12);
 }
 
 void initiate_code(Trienode *root)
@@ -997,12 +1162,24 @@ void initiate_code(Trienode *root)
     DelhiMap();
 
     placesTonodes = {
-        {"Warehouse",0},{"a",1},{"b",2},{"c",3},{"d",4},{"e",5},{"f",6},{"g",7},{"h",8},{"i",9}
-    };
+    {"murthal",0},{"dtu entrance",1},{"dtu sports ground",2},{"dtu library",3},{"dtu oat",4},
+    {"samaypur badli",5},{"rithala",6},{"pitampura",7},{"netaji subhash place",8},{"shalimar bagh",9},
+    {"azadpur",10},{"jharoda",11},{"keshav puram",12},{"ashok vihar",13},{"gtb nagar",14},
+    {"kashmere gate",15},{"signature bridge",16},{"yamuna vihar",17},{"welcome",18},{"dilshad garden",19},
+    {"inderlok",20},{"bahadurgarh",21},{"peeragarhi",22},{"punjabi bagh",23},{"ashoka park main",24},
+    {"kirti nagar",25},{"rajouri garden",26},{"janakpuri",27},{"dwarka",28},{"najafgarh",29},
+    {"connaught place",30},{"new delhi railway station",31},{"bangla sahib",32},{"parliament",33},{"india gate",34},
+    {"supreme court",35},{"red fort",36},{"mandi house",37},{"yamuna bank",38},{"vaishali",39},
+    {"mayur vihar",40},{"botanical garden",41},{"noida",42},{"lajpat nagar",43},{"nehru place",44},
+    {"faridabad",45},{"greater kailash",46},{"hauz khas",47},{"malviya nagar",48},{"qutub minar",49},
+    {"gurugram",50},{"iit delhi",51},{"ina delhi hatt",52},{"dhaula kuan",53},{"igia",54},{"botanical park",55}};
 
-    nodesToplaces = {
-        {0,"Warehouse"},{1,"a"},{2,"b"},{3,"c"},{4,"d"},{5,"e"},{6,"f"},{7,"g"},{8,"h"},{9,"i"}
-    };
+    for(auto it = placesTonodes.begin();it != placesTonodes.end();++it)
+    {
+        nodesToplaces[it->second] = it->first;
+    }
+
+    cout<<placesTonodes["rithala"]<<" "<<nodesToplaces[21];
 
     info(root,1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
     info(root,1,"Computer_Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
@@ -1053,33 +1230,11 @@ int main()
 {
     Trienode *root = newnode();
     initiate_code(root);
-    //cout << Ebook.size();
-    cout << "\nBOOK MANAGEMENT SYSTEM\n\n\n\n";
-    char ch = 'y';
-    do
-    {
-        cout << "Log in \n";
-        cout << "User --> 1    Exit --> 2\n";
-        cout << "Enter Choice: ";
-        int choice1;
-        cin >> choice1;
-        switch (choice1)
-        {
-        case 1:
-            customer(root);
-            break;
 
-        case 2:
+    cout << "\nBOOK MANAGEMENT SYSTEM\n";
+    
+            customer(root);
             cout << "\nExiting....\n";
             _Exit(10);
-            break;
-
-        default:
-            "\nWrong Choice\n";
-        }
-        cout << "\nWant to Login Again(Y/y): ";
-        cin >> ch;
-    } while (ch == 'y' || ch == 'Y');
-    cout << "\nExiting.....\n";
     return 0;
 }
