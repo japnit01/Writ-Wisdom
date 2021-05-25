@@ -13,7 +13,7 @@ using namespace std;
 
 int E_count = 0,P_count = 0;
 string user_path = "user_files/",decompress_path = "decompressed_files/",initiate_path = "files/";
-
+vector<string> place;
 class book{
     public:
     string id;
@@ -149,8 +149,16 @@ void options(Trienode *root,string s)
 {
     if(root->eow)
     {
-        cout<<s<<"\n";
-        searchresults.push_back(root->id);
+        //cout<<s<<"\n";
+        if(root->id == "place")
+        {
+            searchresults.push_back(s);            
+        }
+        else
+        {
+            searchresults.push_back(root->id);
+        }
+        
     }    
 
     if(check(root))
@@ -186,9 +194,17 @@ void suggestion(Trienode *root,string s)
 
     if(checklast && reroot->eow)
     {
-        cout<<s<<"\n";
-        searchresults.push_back(reroot->id);
-        cout<<"No other book found\n";
+        //cout<<s<<"\n";
+        if(root->id == "place")
+        {
+            searchresults.push_back(reroot->id);            
+        }
+        else
+        {
+            searchresults.push_back(reroot->id);
+            cout<<"No other book found\n";
+        }
+
         return;
     }
     else{
@@ -496,9 +512,9 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 
 }
 
-bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
+bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb,Trienode *placeroot){
     codes.clear();
-    cout<<"Order Summary\n";
+    cout<<"\n\nOrder Summary\n";
     cout<<"Item Ordered: "<<p+e<<"\n";
     cout<<"Ebook: "<<e<<"\n";
     cout<<"Printed Book: "<<p<<"\n";
@@ -528,14 +544,30 @@ bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb){
         cout<<"Total Amount: "<<sum + sum*0.18<<"\n";   
     }
 
-    string source = "murthal";
+    string source = "Warehouse";
     string destination;
     if(p!=0)
-    {   
+    {   cout<<"If you want to search for location enter (s)";
         cout<<"\nEnter the place for collecting the order : ";
         getline(cin>>ws,destination);
-        cout<<destination;
-        cout<<placesTonodes[destination]<<"\n";
+
+        if(destination == "s")
+        {
+            string keyword;
+            cout<<"\nSearch Location: ";
+            cin>>keyword;
+            searchresults.clear();
+            suggestion(placeroot,keyword);
+            for(int i=0;i<searchresults.size();i++)
+            {
+                cout<<i+1<<" "<<searchresults[i]<<"\n";
+            }
+
+            cout<<"\nEnter the place for collecting the order : ";
+            getline(cin>>ws,destination);
+        }
+        // cout<<destination;
+        // cout<<placesTonodes[destination]<<"\n";
     }
 
     int op;
@@ -587,9 +619,14 @@ bool compareByName(book a, book b)
     return (a.name < b.name);
 }
 
-bool compareByPrice(book a, book b)
+bool compareByPricehl(book a, book b)
 {
     return (a.price < b.price);
+}
+
+bool compareByPricelh(book a,book b)
+{
+    return (a.price>b.price);
 }
 
 void info(Trienode *root,int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
@@ -606,7 +643,7 @@ void info(Trienode *root,int a,string inputfile,string name, string author, stri
     compressed = "";
     ifstream inpfile;
     string s = "", temp;
-    cout<<inputfile<<"\n";
+    //cout<<inputfile<<"\n";
     inpfile.open(path + inputfile, ios::in);
     if (!inpfile)
     {
@@ -675,7 +712,7 @@ void info(Trienode *root,int a,string inputfile,string name, string author, stri
 void downloadfile()
 {
     map<int,string> display;
-    cout << "\nEbooks\n";
+    cout << "\nBOOK BANK\n";
     int count = 1;
     for (int i = 0; i < Ebook.size(); i++)
     {
@@ -734,22 +771,22 @@ void addfile(Trienode *root)
 {
     cout << "\nAdd Book\n";
     string name, author, subject, tag;
-    cout << "Name: \n";
-    cin >> name;
-    cout << "Author: \n";
-    cin >> author;
-    cout << "Subject: \n";
-    cin >> subject;
-    cout << "Tag (Class/Engineering/Fiction/Mystery): \n";
-    cin >> tag;
+    cout << "Name: ";
+    getline(cin>>ws,name);
+    cout << "\nAuthor: ";
+    getline(cin>>ws,author);
+    cout << "\nSubject: ";
+    getline(cin>>ws,subject);
+    cout << "\nTag (Class/Engineering/Fiction/Mystery): ";
+    getline(cin>>ws,tag);
 
     string inputfile;
     cout << "Enter the name of file: \n";
-    cin >> inputfile;
+    getline(cin>>ws,inputfile);
     info(root,0,inputfile,name, author, subject, tag,"ebook",0);
 }
 
-void cart()
+void cart(Trienode *placeroot)
 {
     vector<string> pb;
     vector<string> eb;
@@ -790,7 +827,7 @@ void cart()
 
         if(choice == 1)
         {   
-            if(billing(p,e,sum,eb,pb))
+            if(billing(p,e,sum,eb,pb,placeroot))
             {
                 Cart.clear();
                 break;
@@ -843,70 +880,97 @@ void bookbank(Trienode *root)
 
 void orderbook()
 {
-    cout << "Books\n";
+    cout << "\nBooks\n";
     int count = 1;
     map<int,string> display;
 
-    string books, filter;
+    string books = "No";
+    int filter;
     vector<book> sortBooks;
-    cout<<"Enter the type of book, 'Physical book or Book PDF'  :  ";
+
+    cout<<"\nFilter by book(Ebook/Pbook/Genre/No): ";
     cin>>books;
-    cout<<"Enter the criteria for displaying the list of books, 'Name of books or Price of books' :  ";
+    transform(books.begin(),books.end(),books.begin(),::tolower);
+
+    if(books == "genre")
+    {
+        cout<<"Enter by Genre: ";
+        cin>>books;
+    }
+
+    cout<<"\nSort by: 1.Name   2.Price low to high   3.Price high to low :";
     cin>>filter;
 
-    transform(books.begin(),books.end(),books.begin(),::tolower);
-    transform(filter.begin(),filter.end(),filter.begin(),::tolower);
-
-    if(books == "physical book")
+    
+    //transform(filter.begin(),filter.end(),filter.begin(),::tolower);
+    cout<<"\n";
+    if(books == "pbook")
     {
         sortBooks = Pbook;
+        cout<<"Filter: Printed Books\n";
     }
-    else
+    else if(books == "ebook")
     {
         sortBooks = Ebook;
+        cout<<"Filter: Electronic Books\n";
+    }
+    else if(books != "ebook" && books!= "pbook")
+    {
+            sortBooks.insert(sortBooks.end(), Pbook.begin(), Pbook.end());
+            sortBooks.insert(sortBooks.end(), Ebook.begin(), Ebook.end()); 
     }
 
-    if(filter == "price")
-    {
-        sort(sortBooks.begin(),sortBooks.end(),compareByPrice);
-    }
-    else 
-    {
+    if(filter == 1)
+    {   
         sort(sortBooks.begin(),sortBooks.end(),compareByName);
+        cout<<"Sorted by: Name\n";
     }
-
-    for (int i = 0; i < Pbook.size(); i++)
+    else if(filter == 2)
     {
-        if (Pbook[i].price != 0)
-        {
-            cout << "\n"
-                 << Pbook[i].subject << "\n";
-            cout << "Name: " << Pbook[i].name << "\n";
-            cout << Pbook[i].tag << "\nAuthor: " << Pbook[i].author << "\n";
-            cout << "Price: " << Pbook[i].price << "\n";
-            cout<<"In Stock: "<<Pbook[i].quantity<<"\n";
-            cout << "\nAdd to Cart --> " << count << "\n";
-            cout << "-----------------------------";
-            display[count] = Pbook[i].id;
-            count++;
-        }
+        sort(sortBooks.begin(),sortBooks.end(),compareByPricehl);
+        cout<<"Sorted by: Price low to high\n";
     }
-
-    for (int i = 0; i < Ebook.size(); i++)
+    else if(filter == 3)
     {
-        if (Ebook[i].price != 0)
-        {
-            cout << "\n"
-                 << Ebook[i].subject << "\n";
-            cout << "Name: " << Ebook[i].name << "\n";
-            cout << Ebook[i].tag << "\nAuthor: " << Ebook[i].author << "\n";
-            cout << "Price: " << Ebook[i].price << "\n";
-            cout << "\nAdd to Cart --> " << count << "\n";
-            cout << "-----------------------------";
-            display[count] = Ebook[i].id;
-            count++;
-        }
+        sort(sortBooks.begin(),sortBooks.end(),compareByPricelh);
+        cout<<"Sorted by: Price high to low\n";
     }
+    
+        for (int i = 0; i < sortBooks.size(); i++)
+        {        if (sortBooks[i].price != 0)
+            {
+                cout << "\n"
+                    << sortBooks[i].subject << "\n";
+                cout << "Name: " << sortBooks[i].name << "\n";
+                cout << sortBooks[i].tag << "\nAuthor: " << sortBooks[i].author << "\n";
+                cout << "Price: " << sortBooks[i].price << "\n";
+                if(sortBooks[i].type == "pbook")
+                    cout<<"In Stock: "<<sortBooks[i].quantity<<"\n";
+                cout << "\nAdd to Cart --> " << count << "\n";
+                cout << "-----------------------------";
+                display[count] = sortBooks[i].id;
+                count++;
+            }
+        }
+    
+    // if( books != "pbook")
+    // {    
+    //     for (int i = 0; i < Ebook.size(); i++)
+    //     {
+    //         if (Ebook[i].price != 0)
+    //         {
+    //             cout << "\n"
+    //                 << Ebook[i].subject << "\n";
+    //             cout << "Name: " << Ebook[i].name << "\n";
+    //             cout << Ebook[i].tag << "\nAuthor: " << Ebook[i].author << "\n";
+    //             cout << "Price: " << Ebook[i].price << "\n";
+    //             cout << "\nAdd to Cart --> " << count << "\n";
+    //             cout << "-----------------------------";
+    //             display[count] = Ebook[i].id;
+    //             count++;
+    //         }
+    //     }
+    // }
 
     int c;
     cout << "\n Exit --> " << count;
@@ -961,13 +1025,19 @@ void orderbook()
 
 void search(Trienode *root)
 {
+    int op;
+    cout<<"\n\nSearch on the basis of: \n";
+    cout<<"1.Author 2.Name\n";
+    cin>>op;
+
     searchresults.clear();
     string search;
-    cout<<"Search: ";
+    cout<<"Search(enter keyword): ";
     cin>>search;
     suggestion(root,search);
 
     cout<<"\nSearch Results\n";
+    cout<<"\n"<<searchresults.size()<<" results displayed";
     int count = 1;
     map<int,string> display;
     for (int i = 0; i < searchresults.size(); i++)
@@ -1037,7 +1107,7 @@ void search(Trienode *root)
     } while (ch == 'y');
 }
 
-void customer(Trienode *root)
+void customer(Trienode *root,Trienode *placeroot)
 {
     char ch = 'y';
     do
@@ -1059,7 +1129,7 @@ void customer(Trienode *root)
                 orderbook();
                 break;
             case 3:
-                cart();
+                cart(placeroot);
                 break;
             case 4:
                 search(root);
@@ -1157,12 +1227,12 @@ void DelhiMap()
     g.addEdge(44,55,12);
 }
 
-void initiate_code(Trienode *root)
+void initiate_code(Trienode *root,Trienode *placeroot)
 {
     DelhiMap();
 
     placesTonodes = {
-    {"murthal",0},{"dtu entrance",1},{"dtu sports ground",2},{"dtu library",3},{"dtu oat",4},
+    {"Warehouse",0},{"dtu entrance",1},{"dtu sports ground",2},{"dtu library",3},{"dtu oat",4},
     {"samaypur badli",5},{"rithala",6},{"pitampura",7},{"netaji subhash place",8},{"shalimar bagh",9},
     {"azadpur",10},{"jharoda",11},{"keshav puram",12},{"ashok vihar",13},{"gtb nagar",14},
     {"kashmere gate",15},{"signature bridge",16},{"yamuna vihar",17},{"welcome",18},{"dilshad garden",19},
@@ -1177,6 +1247,8 @@ void initiate_code(Trienode *root)
     for(auto it = placesTonodes.begin();it != placesTonodes.end();++it)
     {
         nodesToplaces[it->second] = it->first;
+        place.push_back(it->first);
+
     }
 
     cout<<placesTonodes["rithala"]<<" "<<nodesToplaces[21];
@@ -1224,16 +1296,22 @@ void initiate_code(Trienode *root)
         library[Pbook[i].id] = Pbook[i];
         insertkey(root,Pbook[i].name,Pbook[i].id);
     }
+
+    for(int i=0;i<place.size();i++)
+    {
+        insertkey(placeroot,place[i],"place");
+    }
 }
 
 int main()
 {
     Trienode *root = newnode();
-    initiate_code(root);
+    Trienode *placeroot = newnode();
+    initiate_code(root,placeroot);
 
     cout << "\nBOOK MANAGEMENT SYSTEM\n";
     
-            customer(root);
+            customer(root,placeroot);
             cout << "\nExiting....\n";
             _Exit(10);
     return 0;
