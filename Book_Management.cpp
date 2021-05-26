@@ -453,7 +453,7 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
     stack<int> s;
 
     // min heap storing distance-node pairs sorted according to their distances from the source
-    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; 4
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; 
 
     // array storing the distances of all the nodes from the source node
     vector<int> distance(V,INT_MAX);
