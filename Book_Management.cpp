@@ -48,27 +48,31 @@ class book{
 class Graph {
     public:
 
+    // number of vertices
     int V;
+    // adjacency list for graph representation
     vector<list<pair<int,int>>> adj;
 
     Graph(int V);
     void addEdge(int u,int v,int w);
     void printGraph();
-    // void printShortestPath(int source, int destination);s
 };
 
+// class graph constructor
 Graph::Graph(int V)
 {
     this->V = V;
     adj = vector<list<pair<int,int>>> (V, list<pair<int,int>>());
 }
 
+// function to add a weighted edge between two vertices
 void Graph::addEdge(int u, int v,int w)
 {
     adj[u].push_back(make_pair(v,w));
     adj[v].push_back(make_pair(u,w));
 }
 
+// function to print the graph
 void Graph::printGraph()
 {
     for(int i=0;i<V;i++)
@@ -437,27 +441,41 @@ void download(vector<string> eb,int e)
 void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 {
     cout<<src<<" "<<dest<<"\n";
+
+    // converting source and destination places' names to nodes
     int source = placesTonodes[src];
     int destination = placesTonodes[dest];
+
     cout<<placesTonodes[src]<<" "<<placesTonodes[dest]<<"\n";
+    
+    // array storing the previous connected node on the shortest path for each node
     vector<int> connected(V);
     stack<int> s;
-    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; // min heap
+
+    // min heap storing distance-node pairs sorted according to their distances from the source
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq; 4
+
+    // array storing the distances of all the nodes from the source node
     vector<int> distance(V,INT_MAX);
 
+    // inserting source into the priority queue with 0 distance from itself
     pq.push(make_pair(0,source));
     distance[source] = 0;
 
     while(!pq.empty())
     {
+        // popping and storing the node with min distance from the source 
         int node = pq.top().second, u, wt;
         pq.pop();
 
+        // traversing through all the nodes connected to the current node
         for(auto ptr : adj[node])
         {
             u = ptr.first;
             wt = ptr.second;
 
+            // updating the distance of the node connected to current node 
+            // if distance to the connected node via the current node is less than its initial distance
             if(distance[node] + wt < distance[u])
             {
                 distance[u] = distance[node] + wt;
@@ -470,6 +488,7 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
     int i = destination;
     s.push(i);
 
+    // traversing back to the source node via the shortest path
     while(i != source)
     {
         i = connected[i];
@@ -478,6 +497,7 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
 
     cout<<"\nDelivery man will travel from "<<source<<" to "<<destination<<" via the following route :- \n\n\t";
 
+    // printing the shortest path 
     while(!s.empty())
     {
         cout<<nodesToplaces[s.top()];
@@ -490,6 +510,7 @@ void deliver(vector<list<pair<int,int>>> adj, int V, string src, string dest)
         s.pop();
     }
 
+    // printing the shortest distance of destination from the source
     cout<<"\n\nTotal distance : "<<distance[destination]<<"\n\n";
 
 }
