@@ -27,14 +27,11 @@ class book{
     string filename;
 
     book(){}
-    book(string n, string a, string s, string t, string tp, int p)
-    {
-        if(tp == "ebook")
-        {
+    book(string n, string a, string s, string t, string tp, int p){
+        if(tp == "ebook"){
             id = "EB" + to_string(E_count++);
         }
-        else if( tp == "pbook")
-        {
+        else if( tp == "pbook"){
             id = "PB" + to_string(P_count++);
         }        
         name = n;
@@ -119,16 +116,17 @@ Trienode *newnode(){
 
 void insertkey(Trienode *root,string key,string endkey){
     Trienode *temp = root;
-    //cout<<key<<"\n";
     for(int i=0;i<key.size();i++)
-    {    
+    {    //Calculating the ASCII value of char
         int ind = key[i] - '\0';
+        //Checking wether the index is null or not
         if(!temp->children[ind])
         {
             temp->children[ind] = newnode();
         }
         temp = temp->children[ind];
     }
+    //Last node marked as eow and given the id
     temp->eow = true;
     temp->id = endkey;
 }
@@ -147,29 +145,27 @@ bool check(Trienode *root)
 
 void options(Trienode *root,string s)
 {
-    if(root->eow)
-    {
-        //cout<<s<<"\n";
+    if(root->eow){   
+        //searches  for places
         if(root->id == "place")
         {
             searchresults.push_back(s);            
         }
-        else
+        else //searches for names and author
         {
             searchresults.push_back(root->id);
-        }
-        
+        }   
     }    
-
+    //if its last node
     if(check(root))
     {
         return ;
     }
-
+    //backtracking
     for(int i=0;i<255;i++)
     {
         if(root->children[i])
-        {
+        {   
             s.push_back(0+i);
             options(root->children[i],s);
             s.pop_back();
@@ -180,9 +176,11 @@ void options(Trienode *root,string s)
 void suggestion(Trienode *root,string s)
 {
     Trienode *reroot = root;
+    //Traversing over query
     for(int i=0;i<s.size();i++)
     {  
         int ind = s[i] - '\0';
+        //if the ind is null there is no book
         if(!reroot->children[ind])
         {
             cout<<"No book found\n";
@@ -191,23 +189,22 @@ void suggestion(Trienode *root,string s)
         reroot = reroot->children[ind];
     }
     bool checklast = check(reroot);
-
-    if(checklast && reroot->eow)
-    {
-        //cout<<s<<"\n";
+    // if the query has ended and eow and children array 
+    // has all index null 
+    if(checklast && reroot->eow){
+        //serches for places
         if(root->id == "place")
         {
             searchresults.push_back(reroot->id);            
         }
-        else
-        {
+        else //searches for names and author
+        {   
             searchresults.push_back(reroot->id);
             cout<<"No other book found\n";
         }
-
         return;
     }
-    else{
+    else{ //auto completion of query
         options(reroot,s);
         return;
     }
@@ -277,30 +274,25 @@ void preorder(minheapnode *root, string str, string a)
 
 void huffman(map<char, int> freq)
 {
-
     priority_queue<minheapnode *, vector<minheapnode *>, cmp> q;
-
-    for (auto it = freq.begin(); it != freq.end(); it++)
-    {
+    //Storing all characters in the priority queue
+    for (auto it = freq.begin(); it != freq.end(); it++){
         q.push(new minheapnode(it->first, it->second));
     }
-
-    //printq(q);
     minheapnode *top, *right, *left;
-
-    while (q.size() != 1)
-    {
+    //Keep on traversing until one node remains
+    while (q.size() != 1){
+        // node with least freq is queue
         left = q.top();
         q.pop();
-
+        // node with least freq is queue
         right = q.top();
         q.pop();
-
+        //sum of freq of left and right is assigned to top
         top = new minheapnode('#', left->freq + right->freq);
 
         top->left = left;
         top->right = right;
-
         q.push(top);
     }
 
@@ -323,26 +315,26 @@ void calcfreq(string text)
 void decodetext(string text,minheapnode *root)
 {   
     minheapnode *temp = root;
-    //cout<<text.size()<<"\n";
+    
     for(int i=0;i<text.size();i++)
     {
-        //cout<<i<<" ";
+        //until leaf node not found
         root = temp;
         while(root->l == '#' && i<text.size())
-        {
+        {   //left edge
             if(text[i] == '0')
             {   
                 i++;
                 root = root->left;
             }
             else if(text[i] == '1')
-            {
+            {   //right edge
                 i++;
                 root = root->right;
             }
         }
+        //adding the leaf character
         dectext+=root->l;
-        //cout<<dectext<<"\n";
         i--;
     }
 }
@@ -351,28 +343,25 @@ void decodetext(string text,minheapnode *root)
 int dectreec = 0;
 void decodetree(string text,int n,minheapnode* reroot)
 {   
-    if(reroot->l !='#')
-    {
+    //for leaf node
+    if(reroot->l !='#'){
         return ;
     } 
-
-    if(text[dectreec]!='1' && text[dectreec]!='0')
-    {
+    //assinging char to leaf node
+    if(text[dectreec]!='1' && text[dectreec]!='0'){
         reroot->l = text[dectreec];
         dectreec++;
         return ;
     }
-
-    if(text[dectreec] == '0')
-    {
+    //left edge
+    if(text[dectreec] == '0'){
         reroot->left = new minheapnode('#',-1);
         dectreec++;
         decodetree(text,n,reroot->left);
     
     }
-
-    if(text[dectreec] == '1')
-    {
+    //right edge
+    if(text[dectreec] == '1'){
        reroot->right = new minheapnode('#',-1);
        dectreec++;
        decodetree(text,n,reroot->right); 
@@ -383,72 +372,65 @@ void decodehuffman(string text)
 {   
     minheapnode *reroot;
     reroot = new minheapnode('#',-1);
+    //Tree size
     int n = stoi(text.substr(0,32),0,2);
-
+    //Rebuilding Huffman Tree
     decodetree(text.substr(32,n),n,reroot);
+    //Print the codes from the tree
     codestable(reroot,"");
     minheapnode *temp = reroot;
     int textsize = text.size()-32-n;
+    //decoding the text
     decodetext(text.substr(32+n,text.size()-32-n),reroot);
 }
 
 void download(vector<string> eb,int e)
 {   
-    for(int i=0;i<e;i++)
-    {   
+    for(int i=0;i<e;i++){   
         string inputfile,outputfile;
         
         inputfile = library[eb[i]].filename;
-        //cout<<inputfile<<"\n";
         ifstream inpfile;
         string s="",temp;
-
+        //opening the compressed file
         inpfile.open("compressed_files/" + inputfile,ios::in);
-        
+    
         if(!inpfile)
         {
             cout<<"File not found\n";
         }
-        else
-        {
-            while(!inpfile.eof())
-            {
+        else{
+            while(!inpfile.eof()){
                 getline(inpfile,temp);
-                //cout<<temp<<"\n";
-                //cout<<temp.size()<<"\n";
                 s+=temp;
             }
             inpfile.close();
-            //cout<<s.size();
             codes.clear();
             dectext="";
             dectreec = 0;
+            //Decoding the bit string of the file
             decodehuffman(s);
-            //cout<<dectext<<"\n";
-
             ofstream outpfile;
             
             if(inputfile.substr(inputfile.size()-15,inputfile.size()) == "_compressed.txt")
-                outputfile = inputfile.substr(0,inputfile.size()-15) + "_decompressed.txt";
+            {    outputfile = inputfile.substr(0,inputfile.size()-15) + "_decompressed.txt";}
             else
-                outputfile = inputfile + "_decompressed.txt";
+            {    outputfile = inputfile + "_decompressed.txt";}
             outpfile.open(user_path + outputfile,ios::out);
-            
+        
             if(!outpfile)
             {
                 cout<<"File not created\n";
             }
             else
             {
-                //cout<<dectext.size()<<"\n";
                 outpfile<<dectext<<endl;
+                //writing text on output file
                 cout<<inputfile<<" downloaded\n";
             }
             outpfile.close();
-        }
-        
+        }   
     }
-    
 }
 
 // Using Dijkstra's Algorithm
@@ -555,7 +537,8 @@ bool billing(int p,int e,float sum,vector<string> eb,vector<string> pb,Trienode 
         {
             string keyword;
             cout<<"\nSearch Location: ";
-            cin>>keyword;
+            getline(cin>>ws,keyword);
+            transform(keyword.begin(),keyword.end(),keyword.begin(),::tolower);
             searchresults.clear();
             suggestion(placeroot,keyword);
             for(int i=0;i<searchresults.size();i++)
@@ -629,85 +612,71 @@ bool compareByPricelh(book a,book b)
     return (a.price>b.price);
 }
 
-void info(Trienode *root,int a,string inputfile,string name, string author, string subject, string tag,string type,int price)
-{   string path;
+void info(Trienode *root,int a,string inputfile,string name, string author, string subject, string tag,string type,int price){   
+    string path;
     if(a ==1)
-    {
         path = initiate_path; 
-    }
     else if(a ==0)
-    {
         path = user_path;
-    }
     string outputfile;
     compressed = "";
     ifstream inpfile;
     string s = "", temp;
-    //cout<<inputfile<<"\n";
+    //opening the input file
     inpfile.open(path + inputfile, ios::in);
-    if (!inpfile)
-    {
+    if (!inpfile){
         cout << "File not found\n";
     }
-    else
-    {
-        //inpfile>>s;
-        while (!inpfile.eof())
-        {
+    else{
+        while (!inpfile.eof()){
             getline(inpfile, temp);
-            //cout<<temp<<"\n";
             s += temp;
         }
         inpfile.close();
         codes.clear();
+        //calculating frequrncy
         calcfreq(s);
-
         int n = compressed.size();
-        //cout<<n<<"\n";
         string tree_size = "";
-
-        for (int i = 31; i >= 0; i--)
-        {
+        // size of tree into 32 bit int
+        for (int i = 31; i >= 0; i--){
             int k = n >> i;
             if (k & 1)
                 tree_size += "1";
             else
-                tree_size += "0";
-        }
-        //cout<<tree_size.size()<<"\n";
+                tree_size += "0";}
+        //32bit int for size of tree + tree in pre order trvarsal
         compressed = tree_size + compressed;
-        //cout<<s<<"\n";
+        //encoding text with codes generted
         text_encode(s);
-        //cout<<compressed.size()<<"\n";
-
         ofstream outpfile;
-
         if (inputfile.size()>4 && inputfile.substr(inputfile.size() - 4, 4) == ".txt")
-            outputfile = inputfile.substr(0, inputfile.size() - 4) + "_compressed.txt";
-        else
-            outputfile = inputfile + "_compressed.txt";
-        outpfile.open("compressed_files/" + outputfile, ios::out);
-
-        if (!outpfile)
         {
+            outputfile = inputfile.substr(0, inputfile.size() - 4) + "_compressed.txt";
+        }
+        else
+        {
+            outputfile = inputfile + "_compressed.txt";
+        }
+        outpfile.open("compressed_files/" + outputfile, ios::out);
+        if (!outpfile){
             cout << "File not created\n";
         }
-        else
-        {
-            //cout<<compressed.size()<<"\n";
+        else{
+            //writing text in output file
             outpfile << compressed << endl;
-            cout << "File Uploaded\n"; 
+            cout << "File Uploaded\n";
+            //calling the contructor 
             book b(name, author, subject, tag, "ebook",price);
             b.filename = outputfile;
             Ebook.push_back(b);
             library[b.id] = b;
-            insertkey(root,b.name,b.id);
-        }
-
+            //Adding it in trie for search
+            insertkey(root,b.name,b.id);}
         outpfile.close();
         codes.clear();
+        }
     }
-}
 
 void downloadfile()
 {
@@ -1227,10 +1196,9 @@ void DelhiMap()
     g.addEdge(44,55,12);
 }
 
-void initiate_code(Trienode *root,Trienode *placeroot)
-{
+void initiate_code(Trienode *root,Trienode *placeroot){
     DelhiMap();
-
+    //mapping names of places with nodes of Map
     placesTonodes = {
     {"Warehouse",0},{"dtu entrance",1},{"dtu sports ground",2},{"dtu library",3},{"dtu oat",4},
     {"samaypur badli",5},{"rithala",6},{"pitampura",7},{"netaji subhash place",8},{"shalimar bagh",9},
@@ -1243,16 +1211,11 @@ void initiate_code(Trienode *root,Trienode *placeroot)
     {"mayur vihar",40},{"botanical garden",41},{"noida",42},{"lajpat nagar",43},{"nehru place",44},
     {"faridabad",45},{"greater kailash",46},{"hauz khas",47},{"malviya nagar",48},{"qutub minar",49},
     {"gurugram",50},{"iit delhi",51},{"ina delhi hatt",52},{"dhaula kuan",53},{"igia",54},{"botanical park",55}};
-
-    for(auto it = placesTonodes.begin();it != placesTonodes.end();++it)
-    {
+    for(auto it = placesTonodes.begin();it != placesTonodes.end();++it){
         nodesToplaces[it->second] = it->first;
         place.push_back(it->first);
-
     }
-
-    cout<<placesTonodes["rithala"]<<" "<<nodesToplaces[21];
-
+    //Adding Electronic books to databse
     info(root,1,"Machine_Learning","Machine Learning", "Tom Mitchell", "Machine Learning", "Enigneering","ebook", 765);
     info(root,1,"Computer_Graphics","Computer Graphics C Version 2nd Edition", "Hearn,Bakers", "Computer Graphics", "Enigneering", "ebook", 555);
     info(root,1,"Theory_of_Computation","Theory of Computer Science - Automata, Languages and Computation", "K.L.P. Mishra", "Theory of Computation", "Enigneering", "ebook",455);
@@ -1264,7 +1227,7 @@ void initiate_code(Trienode *root,Trienode *placeroot)
     info(root,1,"NCERT_chemistry_12","NCERT chemistry class 12","NCERT", "Chemistry","12th", "ebook",0);
     info(root,1,"NCERT_physics_12"," NCERT physics class 12","NCERT", "Physics", "12th", "ebook",0);
     info(root,1,"NCERT_mathematics_12","NCERT mathematics class 12","NCERT", "Mathematics", "12th", "ebook",0);
-
+    //Adding printed books to database
     Pbook = {
         book("Elementary Problems in Organic Chemistry", "M.S. Chouhan", "Chemistry", "Engineering", "pbook", 500),
         book("Understanding Physics", "D.C. Pandey", "Physics", "Engineering", "pbook", 432),
@@ -1275,40 +1238,27 @@ void initiate_code(Trienode *root,Trienode *placeroot)
         book ("Cengage Calculus for JEE Advanced", "G. Tewani", "mathematics", "engineering", "pbook",899),
         book ("Cengage Coordinate geometry for JEE Advanced", "G. Tewani", "mathematics", "engineering", "pbook",739),
         book ("Cengage Mechanics-1 for JEE Advanced", "B.M. Sharma", "physics", "engineering", "pbook",849),
-        book ("Elementary Problems in Organic Chemistry", "MS Chouhan", "chemistry", "engineering", "pbook",499)
-    
-    };
-
-    Pbook[0].quantity = 3;
-    Pbook[1].quantity = 1;
-    Pbook[2].quantity = 2;
-    Pbook[3].quantity = 3;
-    Pbook[4].quantity = 4;
-    Pbook[5].quantity = 2;
-    Pbook[6].quantity = 1;
-    Pbook[7].quantity = 3;
-    Pbook[8].quantity = 1;
-    Pbook[9].quantity = 2;
-    Pbook[10].quantity = 3;
-
-    for(int i = 0;i<Pbook.size();i++)
-    {
+        book ("Elementary Problems in Organic Chemistry", "MS Chouhan", "chemistry", "engineering", "pbook",499)};
+    Pbook[0].quantity = 3; Pbook[1].quantity = 1; Pbook[2].quantity = 2; Pbook[3].quantity = 3;
+    Pbook[4].quantity = 4; Pbook[5].quantity = 2; Pbook[6].quantity = 1; Pbook[7].quantity = 3;
+    Pbook[8].quantity = 1; Pbook[9].quantity = 2; Pbook[10].quantity = 3;
+    for(int i = 0;i<Pbook.size();i++){
         library[Pbook[i].id] = Pbook[i];
         insertkey(root,Pbook[i].name,Pbook[i].id);
     }
-
-    for(int i=0;i<place.size();i++)
-    {
+    //Adding places in Trie
+    for(int i=0;i<place.size();i++){
         insertkey(placeroot,place[i],"place");
     }
 }
 
 int main()
 {
+    //Root of Trie with names and authors  
     Trienode *root = newnode();
+    //Root of Trie with places
     Trienode *placeroot = newnode();
     initiate_code(root,placeroot);
-
     cout << "\nBOOK MANAGEMENT SYSTEM\n";
     
             customer(root,placeroot);

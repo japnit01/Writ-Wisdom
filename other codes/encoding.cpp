@@ -1,7 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-
 map<char,string> codes;
 string compressed = "";
 
@@ -25,6 +24,22 @@ struct cmp{
     }
 };
 
+void compratio(string s)
+{
+    int b0 = s.size()*8;
+    int b1 = 32 + (codes.size()*8) + compressed.size();
+    int cod = 0;
+    //cout<<compressed.size()<<"\n";
+    for(auto it = codes.begin();it!=codes.end();++it)
+    {
+        cod+=it->second.size();
+    }
+    b1+=cod;
+    cout<<"\n";
+    cout<<"Bits before compression: "<<b0<<"\n";
+    cout<<"Bits after compression: "<<b1<<"\n";
+    cout<<"Compression Ratio: "<<b0/b1<<"\n";
+}
 
 void text_encode(string text)
 {
@@ -117,72 +132,25 @@ void calcfreq(string text)
     {
         freq[text[i]]++;
     }
-    /*
+    
     for(auto it = freq.begin();it!=freq.end();++it)
     {
         cout<<it->first<<" "<<it->second<<"\n";
     }
     
-    cout<<"\n";*/
+    cout<<"\n";
     huffman(freq);
 }
-/*
-int c = 0;
-void decodetree(string text,int n,minheapnode* reroot)
-{   
-    if(reroot->l !='#')
-    {
-        return ;
-    } 
-
-    if(text[c]!='1' && text[c]!='0')
-    {
-        reroot->l = text[c];
-        c++;
-        return ;
-    }
-
-    if(text[c] == '0')
-    {
-        reroot->left = new minheapnode('#',-1);
-        c++;
-        decodetree(text,n,reroot->left);
-    
-    }
-
-    if(text[c] == '1')
-    {
-       reroot->right = new minheapnode('#',-1);
-       c++;
-       decodetree(text,n,reroot->right); 
-    }    
-    return;
-}
-
-void decodehuffman(string text)
-{   
-    minheapnode *reroot;
-    reroot = new minheapnode('#',-1);
-    
-    int n = stoi(text.substr(0,32),0,2);
-    //cout<<n<<""<<text.substr(0,32)<<"\n";
-
-    text = text.substr(32,text.size()-32);
-    decodetree(text,n,reroot);
-    codestable(reroot,"");
-}
-*/
 int main(){
     
     string inputfile,outputfile;
 
-    cout<<"Enter the name of file: \n";
-    cin>>inputfile;
+
 
     ifstream inpfile;
     string s="",temp;
 
-    inpfile.open("files/" + inputfile,ios::in);
+    inpfile.open("C:/Users/japni/OneDrive/Desktop/Book-Management-System/files/sample.txt",ios::in);
     if(!inpfile)
     {
         cout<<"File not found\n";
@@ -213,11 +181,13 @@ int main(){
             tree_size+="0";
         }
         //cout<<tree_size.size()<<"\n";
+        string tree = compressed;
         compressed = tree_size + compressed;
-        //cout<<s<<"\n";
         text_encode(s);
-        //cout<<compressed.size()<<"\n";
-    
+        cout<<"compressed string"<<"\n";
+        cout<<tree_size<<" "<<tree<<" "<<compressed.substr(32+tree.size(),compressed.size() - (32+tree.size()))<<"\n";
+        compratio(s);
+
         ofstream outpfile;
 
         outputfile = inputfile + "_compressed.txt";
