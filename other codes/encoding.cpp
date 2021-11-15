@@ -150,7 +150,7 @@ int main(){
     ifstream inpfile;
     string s="",temp;
 
-    inpfile.open("C:/Users/japni/OneDrive/Desktop/Book-Management-System/files/sample.txt",ios::in);
+    inpfile.open("C:/Users/japni/Desktop/Projects/Book-Management-System/files/sample.txt",ios::in);
     if(!inpfile)
     {
         cout<<"File not found\n";
